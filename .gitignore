@@ -8,6 +8,7 @@
 /.idea.MAUSIC.iml
 /.idea/
 /MAUSIC/bin/
+/MAUSIC/bin/Debug/
 /MAUSIC/obj/
 # Editor-based HTTP Client requests
 /httpRequests/

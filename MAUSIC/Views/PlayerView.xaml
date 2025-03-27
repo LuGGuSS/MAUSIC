@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<abstractView:BaseView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:MAUSIC.ViewModels"
+    xmlns:abstractView="clr-namespace:MAUSIC.Views.Abstract"
+    xmlns:abstractViewModels="clr-namespace:MAUSIC.ViewModels.Abstract"
+    x:Class="MAUSIC.Views.PlayerView"
+    x:TypeArguments="abstractViewModels:BaseViewModel"
+    x:DataType="viewModels:PlayerViewModel">
+
+    <Grid
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
+
+        <VerticalStackLayout
+            Spacing="16">
+        <Image
+            Source="dotnet_bot.png"
+            Grid.Row="0"
+            HeightRequest="250"
+            Aspect="AspectFit"/>
+
+
+            <Label
+                Text="{Binding SongName}"
+                Style="{StaticResource Headline}"/>
+
+            <Label
+                Text="{Binding Artist}"
+                Style="{StaticResource SubHeadline}"/>
+
+            <Label
+                Text="{Binding Album}"
+                Style="{StaticResource SubHeadline}"/>
+
+            <HorizontalStackLayout
+                HorizontalOptions="Fill">
+
+                <Label
+                    HorizontalOptions="Start"
+                    Text="{Binding CurrentTime}"
+                    Style="{StaticResource SubHeadline}"/>
+
+                <Slider
+                    HorizontalOptions="Fill"/>
+
+                <Label
+                    HorizontalOptions="End"
+                    Text="{Binding Duration}"
+                    Style="{StaticResource SubHeadline}"/>
+
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </Grid>
+
+</abstractView:BaseView>
