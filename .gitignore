@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/modules.xml
+/contentModel.xml
+/.idea.MAUSIC.iml
+/.idea/
+/MAUSIC/bin/
+/MAUSIC/obj/
+# Editor-based HTTP Client requests
+/httpRequests/
