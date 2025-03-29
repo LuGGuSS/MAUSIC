@@ -1,4 +1,8 @@
-﻿namespace MAUSIC;
+﻿using System;
+using Microsoft.Maui.Accessibility;
+using Microsoft.Maui.Controls;
+
+namespace MAUSIC;
 
 public partial class MainPage : ContentPage
 {
@@ -21,4 +25,3 @@ public partial class MainPage : ContentPage
 		SemanticScreenReader.Announce(CounterBtn.Text);
 	}
 }
-

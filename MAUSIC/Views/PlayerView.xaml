@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<abstractView:BaseView
+<baseViews:BaseView
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:MAUSIC.ViewModels"
-    xmlns:abstractView="clr-namespace:MAUSIC.Views.Abstract"
-    xmlns:abstractViewModels="clr-namespace:MAUSIC.ViewModels.Abstract"
+    xmlns:baseViews="clr-namespace:MAUSIC.Views.Abstract"
     x:Class="MAUSIC.Views.PlayerView"
-    x:TypeArguments="abstractViewModels:BaseViewModel"
+    x:TypeArguments="viewModels:PlayerViewModel"
     x:DataType="viewModels:PlayerViewModel">
 
     <Grid
         HorizontalOptions="Fill"
-        VerticalOptions="Fill">
+        VerticalOptions="Fill"
+        Margin="16">
 
         <VerticalStackLayout
             Spacing="16">
-        <Image
-            Source="dotnet_bot.png"
-            Grid.Row="0"
-            HeightRequest="250"
-            Aspect="AspectFit"/>
 
+            <Image
+                Source="{Binding Cover}"
+                Grid.Row="0"
+                HeightRequest="250"
+                Aspect="AspectFit"/>
 
             <Label
                 Text="{Binding SongName}"
@@ -35,25 +36,51 @@
                 Text="{Binding Album}"
                 Style="{StaticResource SubHeadline}"/>
 
-            <HorizontalStackLayout
+            <Slider
+                x:Name="Slider"
+                HorizontalOptions="Fill"
+                Maximum="{Binding DurationTimeSliderValue}"
+                Value="{Binding CurrentTimeSliderValue}"
+                DragCompleted="DragCompleted"/>
+
+            <Grid
                 HorizontalOptions="Fill">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
                 <Label
                     HorizontalOptions="Start"
-                    Text="{Binding CurrentTime}"
+                    Grid.Column="0"
+                    Text="{Binding CurrentTimeStringRepresentation}"
                     Style="{StaticResource SubHeadline}"/>
 
-                <Slider
-                    HorizontalOptions="Fill"/>
 
                 <Label
                     HorizontalOptions="End"
-                    Text="{Binding Duration}"
+                    Grid.Column="1"
+                    Text="{Binding DurationStringRepresentation}"
                     Style="{StaticResource SubHeadline}"/>
 
-            </HorizontalStackLayout>
+            </Grid>
+
+        <Button
+            ImageSource="dotnet_bot.png"
+            HeightRequest="48"
+            WidthRequest="48"
+            Clicked="OnPlayButtonClicked"/>
 
         </VerticalStackLayout>
+
+        <toolkit:MediaElement
+            x:Name="MusicPlayer"
+            IsVisible="false"
+            Source="{Binding CurrentSongPath}"
+            MetadataTitle="{Binding SongName}"
+            MetadataArtist="{Binding Artist}"
+            PositionChanged="OnPlayerPositionChanged"
+            MediaEnded="OnMediaEnded"/>
     </Grid>
 
-</abstractView:BaseView>
+</baseViews:BaseView>

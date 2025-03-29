@@ -1,13 +1,15 @@
 using MAUSIC.ViewModels.Abstract;
+using Microsoft.Maui.Controls;
 
 namespace MAUSIC.Views.Abstract;
 
 public class BaseView<TViewModel> : ContentPage
     where TViewModel : BaseViewModel
 {
-    public TViewModel ViewModel { get; }
+    private bool _isInitialized;
+    protected TViewModel ViewModel { get; }
 
-    public BaseView(TViewModel vm)
+    protected BaseView(TViewModel vm)
     {
         ViewModel = vm;
         BindingContext = vm;
@@ -17,6 +19,12 @@ public class BaseView<TViewModel> : ContentPage
     {
         base.OnAppearing();
 
+        if (_isInitialized)
+        {
+            return;
+        }
+
         ViewModel.InitializeCommand.Execute(null);
+        _isInitialized = true;
     }
 }

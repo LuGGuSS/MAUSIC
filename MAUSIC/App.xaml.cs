@@ -1,4 +1,7 @@
-﻿namespace MAUSIC;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+
+namespace MAUSIC;
 
 public partial class App : Application
 {
