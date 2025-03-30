@@ -40,9 +40,8 @@ public partial class PlayerView
 
     private void DragCompleted(object? sender, EventArgs e)
     {
-        ViewModel.DragCompletedCommand.Execute(null);
-
-        MusicPlayer.SeekTo(TimeSpan.FromSeconds(Slider.Value));
+        var newPosition = TimeSpan.FromSeconds((int)Slider.Value);
+        MusicPlayer.SeekTo(newPosition);
     }
 
     private void OnPlayButtonClicked(object? sender, EventArgs e)
@@ -52,7 +51,10 @@ public partial class PlayerView
 
     private void OnMediaEnded(object? sender, EventArgs e)
     {
-
+        ViewModel.CurrentSongIndex++;
+        ViewModel.EnqueueNextSongCommand.Execute(null);
+        MusicPlayer.SeekTo(TimeSpan.Zero);
+        MusicPlayer.Play();
     }
 
     private void OnPlayerPositionChanged(object? sender, MediaPositionChangedEventArgs e)

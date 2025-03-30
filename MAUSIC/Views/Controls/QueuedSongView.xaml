@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MAUSIC.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MAUSIC.Views.Controls.QueuedSongView"
+             x:DataType="models:SongModel">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Playing">Red</Color>
+            <!--<Color x:Key="Playing">Green</Color>-->
+            <Color x:Key="Default">Gray</Color>
+
+            <toolkit:BoolToObjectConverter
+                x:Key="IsPlayingConverter"
+                TrueObject="{StaticResource Playing}"
+                FalseObject="{StaticResource Default}"/>
+
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <Border
+        Padding="0, 0, 20, 0"
+        Stroke="{Binding IsPlaying, Converter={StaticResource IsPlayingConverter}}" >
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Source="{Binding CoverImage}"
+                Aspect="AspectFit"
+                VerticalOptions="Fill"
+                HorizontalOptions="Start"
+                Grid.Column="0"/>
+
+            <VerticalStackLayout
+                Spacing="4"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center"
+                Grid.Column="1">
+
+                <Label
+                    Text="{Binding Title}"
+                    Style="{StaticResource Headline}"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"/>
+
+                <Label
+                    Text="{Binding Artist}"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"/>
+
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding DurationString}"
+                Style="{StaticResource Headline}"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                Grid.Column="2"/>
+
+        </Grid>
+
+
+    </Border>
+
+
+</ContentView>

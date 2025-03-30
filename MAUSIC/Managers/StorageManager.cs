@@ -30,7 +30,7 @@ public class StorageManager
         return files;
     }
 
-    public  async Task<List<string>> GetMusicFiles(string folderPath)
+    public async Task<List<string>> GetMusicFiles(string folderPath)
     {
         var files = await _storageService.GetFiles(folderPath);
 

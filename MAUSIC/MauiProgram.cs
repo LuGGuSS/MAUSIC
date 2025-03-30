@@ -36,11 +36,13 @@ public static class MauiProgram
 
 		// Registering Services
 		builder.Services
-			.AddSingleton<StorageService>();
+			.AddSingleton<StorageService>()
+			.AddSingleton<DatabaseService>();
 
 		// Registering Managers
 		builder.Services
-			.AddSingleton<StorageManager>();
+			.AddSingleton<StorageManager>()
+			.AddSingleton<DatabaseManager>();
 
 		// Registering ViewModels
 		builder.Services

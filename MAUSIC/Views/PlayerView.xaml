@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<baseViews:BaseView
+<baseViews:BasePage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:controls="clr-namespace:MAUSIC.Views.Controls"
+    xmlns:models="clr-namespace:MAUSIC.Models"
     xmlns:viewModels="clr-namespace:MAUSIC.ViewModels"
     xmlns:baseViews="clr-namespace:MAUSIC.Views.Abstract"
     x:Class="MAUSIC.Views.PlayerView"
@@ -15,17 +17,22 @@
         VerticalOptions="Fill"
         Margin="16">
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <VerticalStackLayout
-            Spacing="16">
+            Spacing="16"
+            Grid.Row="0">
 
             <Image
                 Source="{Binding Cover}"
-                Grid.Row="0"
                 HeightRequest="250"
                 Aspect="AspectFit"/>
 
             <Label
-                Text="{Binding SongName}"
+                Text="{Binding Title}"
                 Style="{StaticResource Headline}"/>
 
             <Label
@@ -73,14 +80,36 @@
 
         </VerticalStackLayout>
 
+        <ScrollView
+            Orientation="Vertical"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            Grid.Row="1">
+            <VerticalStackLayout
+                HorizontalOptions="Fill"
+                BindableLayout.ItemsSource="{Binding Songs}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:SongModel">
+                        <controls:QueuedSongView
+                            HeightRequest="200">
+                            <controls:QueuedSongView.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding QueueSongSelectedCommand, Source={RelativeSource AncestorType={x:Type viewModels:PlayerViewModel}}, x:DataType=viewModels:PlayerViewModel}" CommandParameter="{Binding .}"/>
+                            </controls:QueuedSongView.GestureRecognizers>
+                        </controls:QueuedSongView>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </ScrollView>
+
         <toolkit:MediaElement
+            Grid.Row="0"
             x:Name="MusicPlayer"
             IsVisible="false"
             Source="{Binding CurrentSongPath}"
-            MetadataTitle="{Binding SongName}"
+            MetadataTitle="{Binding Title}"
             MetadataArtist="{Binding Artist}"
             PositionChanged="OnPlayerPositionChanged"
             MediaEnded="OnMediaEnded"/>
     </Grid>
 
-</baseViews:BaseView>
+</baseViews:BasePage>
