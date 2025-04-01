@@ -12,6 +12,7 @@ public partial class PlayerView
     private const int NextSongIndex = 1;
 
     private bool _isDragging;
+
     public PlayerView(PlayerViewModel vm)
         :base(vm)
     {
@@ -46,7 +47,6 @@ public partial class PlayerView
     {
         var newTime = TimeSpan.FromSeconds(Slider.Value);
         MusicPlayer.SeekTo(newTime);
-        ViewModel.CurrentTimeStringRepresentation = newTime.ToString(@"mm\:ss");
         _isDragging = false;
     }
 

@@ -20,7 +20,6 @@ public partial class PlayerViewModel : BaseViewModel
 {
 
     private readonly StorageManager _storageManager;
-
     private readonly DatabaseManager _databaseManager;
 
     private CancellationTokenSource _cancellationTokenSource;

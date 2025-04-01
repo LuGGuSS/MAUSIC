@@ -29,10 +29,10 @@ public static class MauiProgram
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
-		// Registering toolkit items
+		// Registering nuget items
 		builder.Services
-			.AddSingleton<IFolderPicker>(FolderPicker.Default)
-			.AddSingleton<IFilePicker>(FilePicker.Default);
+			.AddSingleton(FolderPicker.Default)
+			.AddSingleton(FilePicker.Default);
 
 		// Registering Services
 		builder.Services
