@@ -8,17 +8,21 @@ namespace MAUSIC.Views;
 
 public partial class PlayerView
 {
+    private const int PreviousSongIndex = -1;
+    private const int NextSongIndex = 1;
+
+    private bool _isDragging;
     public PlayerView(PlayerViewModel vm)
         :base(vm)
     {
         InitializeComponent();
     }
 
-    private async Task StartPlayingSong()
+    private void StartPlayingSong()
     {
         if (ViewModel.CurrentSongPath == null)
         {
-            await ViewModel.RequestFiles();
+            return;
         }
 
         if (MusicPlayer.CurrentState != MediaElementState.Stopped &&
@@ -29,38 +33,93 @@ public partial class PlayerView
 
         else if (MusicPlayer.CurrentState != MediaElementState.Playing)
         {
-            if (MusicPlayer.Position >= MusicPlayer.Duration)
-            {
-                await MusicPlayer.SeekTo(ViewModel.CurrentTime);
-            }
-
             MusicPlayer.Play();
         }
     }
 
-    private void DragCompleted(object? sender, EventArgs e)
+    private void OnDragStarted(object? sender, EventArgs e)
     {
-        var newPosition = TimeSpan.FromSeconds((int)Slider.Value);
-        MusicPlayer.SeekTo(newPosition);
+        _isDragging = true;
+    }
+
+    private void OnDragCompleted(object? sender, EventArgs e)
+    {
+        var newTime = TimeSpan.FromSeconds(Slider.Value);
+        MusicPlayer.SeekTo(newTime);
+        ViewModel.CurrentTimeStringRepresentation = newTime.ToString(@"mm\:ss");
+        _isDragging = false;
+    }
+
+    private void OnSkipPreviousButtonClicked(object? sender, EventArgs e)
+    {
+        if (MusicPlayer.Position <= TimeSpan.FromSeconds(5))
+        {
+            PlayNextSong(PreviousSongIndex);
+        }
+        else
+        {
+            MusicPlayer.SeekTo(TimeSpan.Zero);
+        }
     }
 
     private void OnPlayButtonClicked(object? sender, EventArgs e)
     {
-        _ = StartPlayingSong();
+        StartPlayingSong();
+    }
+
+    private void OnSkipNextButtonClicked(object? sender, EventArgs e)
+    {
+        PlayNextSong(NextSongIndex);
     }
 
     private void OnMediaEnded(object? sender, EventArgs e)
     {
-        ViewModel.CurrentSongIndex++;
-        ViewModel.EnqueueNextSongCommand.Execute(null);
+        PlayNextSong(NextSongIndex);
+    }
+
+    private void PlayNextSong(int indexValue)
+    {
+        if (ViewModel.CurrentSongPath == null)
+        {
+            return;
+        }
+
         MusicPlayer.SeekTo(TimeSpan.Zero);
-        MusicPlayer.Play();
+        ViewModel.CurrentTimeSliderValue = 0;
+        ViewModel.CurrentSongIndex += indexValue;
+        ViewModel.EnqueueNextSongCommand.Execute(null);
     }
 
     private void OnPlayerPositionChanged(object? sender, MediaPositionChangedEventArgs e)
     {
-        ViewModel.CurrentTime = e.Position;
+        if (_isDragging)
+        {
+            return;
+        }
+
         ViewModel.CurrentTimeSliderValue = e.Position.TotalSeconds;
         ViewModel.CurrentTimeStringRepresentation = e.Position.ToString(@"mm\:ss");
+    }
+
+    private void OnSliderValueChanged(object? sender, ValueChangedEventArgs e)
+    {
+        var newTime = TimeSpan.FromSeconds(Slider.Value);
+        ViewModel.CurrentTimeStringRepresentation = newTime.ToString(@"mm\:ss");
+    }
+
+    private void OnMediaPlayerStateChanged(object? sender, MediaStateChangedEventArgs e)
+    {
+        PlayButton.ImageSource = ImageSource.FromFile(
+            MusicPlayer.CurrentState == MediaElementState.Playing
+                ? "pause_24dp.png"
+                : "play_arrow_24dp.png");
+    }
+
+    private void RequestFilesButton(object? sender, EventArgs e)
+    {
+        if (ViewModel.CurrentSongPath == null)
+        {
+            _ = ViewModel.RequestFiles();
+        }
     }
 }

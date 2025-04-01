@@ -14,17 +14,17 @@
 
     <Grid
         HorizontalOptions="Fill"
-        VerticalOptions="Fill"
-        Margin="16">
+        VerticalOptions="Fill">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
         <VerticalStackLayout
+            Margin="16"
             Spacing="16"
-            Grid.Row="0">
+            Grid.Column="0">
 
             <Image
                 Source="{Binding Cover}"
@@ -48,7 +48,9 @@
                 HorizontalOptions="Fill"
                 Maximum="{Binding DurationTimeSliderValue}"
                 Value="{Binding CurrentTimeSliderValue}"
-                DragCompleted="DragCompleted"/>
+                ValueChanged="OnSliderValueChanged"
+                DragStarted="OnDragStarted"
+                DragCompleted="OnDragCompleted"/>
 
             <Grid
                 HorizontalOptions="Fill">
@@ -72,34 +74,94 @@
 
             </Grid>
 
-        <Button
-            ImageSource="dotnet_bot.png"
-            HeightRequest="48"
-            WidthRequest="48"
-            Clicked="OnPlayButtonClicked"/>
+            <Grid
+                HorizontalOptions="Center"
+                ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="skip_previous_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnSkipPreviousButtonClicked"/>
+
+                <Button
+                    Grid.Column="1"
+                    x:Name="PlayButton"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="play_arrow_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnPlayButtonClicked"/>
+
+                <Button
+                    Grid.Column="2"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="skip_next_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnSkipNextButtonClicked"/>
+
+            </Grid>
 
         </VerticalStackLayout>
 
-        <ScrollView
-            Orientation="Vertical"
+        <CollectionView
+            Grid.Column="1"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            Grid.Row="1">
-            <VerticalStackLayout
-                HorizontalOptions="Fill"
-                BindableLayout.ItemsSource="{Binding Songs}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:SongModel">
-                        <controls:QueuedSongView
-                            HeightRequest="200">
-                            <controls:QueuedSongView.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding QueueSongSelectedCommand, Source={RelativeSource AncestorType={x:Type viewModels:PlayerViewModel}}, x:DataType=viewModels:PlayerViewModel}" CommandParameter="{Binding .}"/>
-                            </controls:QueuedSongView.GestureRecognizers>
-                        </controls:QueuedSongView>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-        </ScrollView>
+            ItemsSource="{Binding Songs}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SongModel">
+                    <controls:QueuedSongView
+                        HeightRequest="200">
+                        <controls:QueuedSongView.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{
+                                    Binding QueueSongSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type viewModels:PlayerViewModel}},
+                                    x:DataType=viewModels:PlayerViewModel}"
+                                CommandParameter="{Binding .}"/>
+                        </controls:QueuedSongView.GestureRecognizers>
+                    </controls:QueuedSongView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Spacing="16">
+
+                    <Label
+                        MaxLines="2"
+                        Text="Please give access to folder containing music."
+                        Style="{StaticResource Headline}"/>
+
+                    <Button
+                        WidthRequest="48"
+                        HeightRequest="48"
+                        BackgroundColor="Transparent"
+                        ImageSource="library_music_24dp.png"
+                        Clicked="RequestFilesButton"/>
+
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
 
         <toolkit:MediaElement
             Grid.Row="0"
@@ -108,6 +170,7 @@
             Source="{Binding CurrentSongPath}"
             MetadataTitle="{Binding Title}"
             MetadataArtist="{Binding Artist}"
+            StateChanged="OnMediaPlayerStateChanged"
             PositionChanged="OnPlayerPositionChanged"
             MediaEnded="OnMediaEnded"/>
     </Grid>

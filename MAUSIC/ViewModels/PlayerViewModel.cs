@@ -31,15 +31,13 @@ public partial class PlayerViewModel : BaseViewModel
 
     [ObservableProperty] private string _album;
 
-    [ObservableProperty] private ImageSource _cover = ImageSource.FromFile("dotnet_bot.png");
+    [ObservableProperty] private ImageSource _cover = ImageSource.FromFile("album_100dp.png");
 
     [ObservableProperty] private TimeSpan _duration;
 
     [ObservableProperty] private double _durationTimeSliderValue;
 
     [ObservableProperty] private string _durationStringRepresentation;
-
-    [ObservableProperty] private TimeSpan _currentTime;
 
     [ObservableProperty] private double _currentTimeSliderValue;
 
@@ -68,8 +66,7 @@ public partial class PlayerViewModel : BaseViewModel
         Album = "album";
         Duration = new TimeSpan(0, 4, 20);
         DurationTimeSliderValue = Duration.TotalSeconds;
-        CurrentTime = TimeSpan.Zero;
-        CurrentTimeSliderValue = CurrentTime.TotalSeconds;
+        CurrentTimeSliderValue = 0;
         UpdateStringRepresentation();
     }
 
@@ -140,6 +137,10 @@ public partial class PlayerViewModel : BaseViewModel
         {
             CurrentSongIndex = 0;
         }
+        else if(CurrentSongIndex < 0)
+        {
+            CurrentSongIndex = Songs.Count - 1;
+        }
 
         var currentPlayingSong = Songs.FirstOrDefault(song => song.IsPlaying);
         if (currentPlayingSong != null)
@@ -152,7 +153,6 @@ public partial class PlayerViewModel : BaseViewModel
         Title = song.Title;
         Artist = song.Artist;
         Album = song.Album;
-        CurrentTime = TimeSpan.Zero;
         Duration = song.Duration;
         DurationTimeSliderValue = Duration.TotalSeconds;
 
@@ -184,14 +184,14 @@ public partial class PlayerViewModel : BaseViewModel
 
         var result =tags.Tag.Pictures.Length > 0
             ? ImageSource.FromStream(() => new MemoryStream(tags.Tag.Pictures[0].Data.Data))
-            : ImageSource.FromFile("dotnet_bot.png");
+            : ImageSource.FromFile("album_100dp.png");
 
         return result;
     }
 
     private void UpdateStringRepresentation()
     {
-        CurrentTimeStringRepresentation = CurrentTime.ToString(@"mm\:ss");
+        CurrentTimeStringRepresentation = TimeSpan.Zero.ToString(@"mm\:ss");
 
         DurationStringRepresentation = Duration.ToString(@"mm\:ss");
     }

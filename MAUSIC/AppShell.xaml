@@ -8,8 +8,7 @@
     NavBarIsVisible="False">
 
     <ShellContent
-        Title="Home"
         ContentTemplate="{DataTemplate views:PlayerView}"
-        Route="MainPage" />
+        Route="PlayerView" />
 
 </Shell>
