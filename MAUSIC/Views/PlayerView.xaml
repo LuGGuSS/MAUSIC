@@ -167,7 +167,7 @@
         </CollectionView>
 
         <toolkit:MediaElement
-            Grid.Row="0"
+            Grid.Column="0"
             x:Name="MusicPlayer"
             IsVisible="false"
             Source="{Binding CurrentSongPath}"
