@@ -25,11 +25,6 @@ public class SongModel : BaseModel
     public bool IsPlaying
     {
         get => _isPlaying;
-        set
-        {
-            _isPlaying = value;
-
-            OnPropertyChanged();
-        }
+        set => SetField(ref _isPlaying, value);
     }
 }

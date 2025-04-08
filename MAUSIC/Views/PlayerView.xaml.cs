@@ -8,9 +8,6 @@ namespace MAUSIC.Views;
 
 public partial class PlayerView
 {
-    private const int PreviousSongIndex = -1;
-    private const int NextSongIndex = 1;
-
     private bool _isDragging;
 
     public PlayerView(PlayerViewModel vm)
@@ -54,7 +51,7 @@ public partial class PlayerView
     {
         if (MusicPlayer.Position <= TimeSpan.FromSeconds(5))
         {
-            PlayNextSong(PreviousSongIndex);
+            PlayPreviousSong();
         }
         else
         {
@@ -69,15 +66,15 @@ public partial class PlayerView
 
     private void OnSkipNextButtonClicked(object? sender, EventArgs e)
     {
-        PlayNextSong(NextSongIndex);
+        PlayNextSong();
     }
 
     private void OnMediaEnded(object? sender, EventArgs e)
     {
-        PlayNextSong(NextSongIndex);
+        PlayNextSong();
     }
 
-    private void PlayNextSong(int indexValue)
+    private void PlayNextSong()
     {
         if (ViewModel.CurrentSongPath == null)
         {
@@ -86,8 +83,19 @@ public partial class PlayerView
 
         MusicPlayer.SeekTo(TimeSpan.Zero);
         ViewModel.CurrentTimeSliderValue = 0;
-        ViewModel.CurrentSongIndex += indexValue;
         ViewModel.EnqueueNextSongCommand.Execute(null);
+    }
+
+    private void PlayPreviousSong()
+    {
+        if (ViewModel.CurrentSongPath == null)
+        {
+            return;
+        }
+
+        MusicPlayer.SeekTo(TimeSpan.Zero);
+        ViewModel.CurrentTimeSliderValue = 0;
+        ViewModel.EnqueuePreviousSongCommand.Execute(null);
     }
 
     private void OnPlayerPositionChanged(object? sender, MediaPositionChangedEventArgs e)

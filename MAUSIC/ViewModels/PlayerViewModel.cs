@@ -21,6 +21,9 @@ public partial class PlayerViewModel : BaseViewModel
 
     private readonly StorageManager _storageManager;
     private readonly DatabaseManager _databaseManager;
+    private readonly QueueManager _queueManager;
+
+    private readonly SemaphoreSlim _semaphore = new(1);
 
     private CancellationTokenSource _cancellationTokenSource;
 
@@ -46,14 +49,14 @@ public partial class PlayerViewModel : BaseViewModel
 
     [ObservableProperty] private List<SongModel> _songs;
 
-    [ObservableProperty] private int _currentSongIndex;
-
     public PlayerViewModel(
         StorageManager storageManager,
-        DatabaseManager databaseManager)
+        DatabaseManager databaseManager,
+        QueueManager queueManager)
     {
         _storageManager = storageManager;
         _databaseManager = databaseManager;
+        _queueManager = queueManager;
 
         _cancellationTokenSource = new CancellationTokenSource();
     }
@@ -80,6 +83,8 @@ public partial class PlayerViewModel : BaseViewModel
 
         var songsEntities = new List<SongEntity>();
 
+        var dbCheckTasks = new List<Task>();
+
         foreach (var file in files)
         {
             var existingSong = await _databaseManager.GetItemAsync<SongEntity>((song) => song.Path == file);
@@ -89,19 +94,26 @@ public partial class PlayerViewModel : BaseViewModel
                 continue;
             }
 
-            var tagsFile = TagLib.File.Create(file);
-
-            var song = new SongEntity
+            var task = new Task(() =>
             {
-                Title = tagsFile.Tag.Title,
-                Artist = tagsFile.Tag.FirstPerformer,
-                Album = tagsFile.Tag.Album,
-                Duration = tagsFile.Properties.Duration,
-                Path = file
-            };
+                var tagsFile = TagLib.File.Create(file);
 
-            songsEntities.Add(song);
+                var song = new SongEntity
+                {
+                    Title = tagsFile.Tag.Title,
+                    Artist = tagsFile.Tag.FirstPerformer,
+                    Album = tagsFile.Tag.Album,
+                    Duration = tagsFile.Properties.Duration,
+                    Path = file
+                };
+
+                songsEntities.Add(song);
+            });
+
+            dbCheckTasks.Add(task);
         }
+
+        await Task.WhenAll(dbCheckTasks);
 
         await _databaseManager.SaveItemsAsync(songsEntities);
 
@@ -109,22 +121,39 @@ public partial class PlayerViewModel : BaseViewModel
 
         var songModels = new List<SongModel>();
 
+        var initSongEntityTasks = new List<Task>();
+
         foreach (var song in allSongEntities)
         {
-            var model = song.Map();
-
-            if (model == null)
+            var task = Task.Run(() =>
             {
-                continue;
-            }
+                var model = song.Map();
 
-            model.CoverImage = TryGetSongCover(song.Path);
+                if (model == null)
+                {
+                    return;
+                }
 
-            songModels.Add(model);
+                model.CoverImage = TryGetSongCover(song.Path);
+
+                _semaphore.Wait();
+                songModels.Add(model);
+                _semaphore.Release();
+            });
+
+            initSongEntityTasks.Add(task);
         }
 
-        Songs = songModels;
-        CurrentSongIndex = 0;
+        await Task.WhenAll(initSongEntityTasks);
+
+        Songs = songModels.OrderBy(songModel => songModel.Path).ToList();
+
+        var currentSong = _queueManager.InitQueue(Songs);
+
+        if (currentSong == null)
+        {
+            return;
+        }
 
         EnqueueNextSong();
     }
@@ -132,49 +161,42 @@ public partial class PlayerViewModel : BaseViewModel
     [RelayCommand]
     private void EnqueueNextSong()
     {
-        if (CurrentSongIndex >= Songs.Count)
+        var nextSong = _queueManager.EnqueueNextSong();
+
+        if (nextSong == null)
         {
-            CurrentSongIndex = 0;
-        }
-        else if(CurrentSongIndex < 0)
-        {
-            CurrentSongIndex = Songs.Count - 1;
+            return;
         }
 
-        var currentPlayingSong = Songs.FirstOrDefault(song => song.IsPlaying);
-        if (currentPlayingSong != null)
-        {
-            currentPlayingSong.IsPlaying = false;
-        }
-
-        var song = Songs[CurrentSongIndex];
-
-        Title = song.Title;
-        Artist = song.Artist;
-        Album = song.Album;
-        Duration = song.Duration;
-        DurationTimeSliderValue = Duration.TotalSeconds;
-
-        Cover = song.CoverImage;
-
-        song.IsPlaying = true;
-
-
-        CurrentSongPath = MediaSource.FromFile(Songs[CurrentSongIndex].Path);
-
-        UpdateStringRepresentation();
+        OnNewSongPlaying(nextSong);
     }
 
     [RelayCommand]
-    private Task QueueSongSelected(SongModel song)
+    private void EnqueuePreviousSong()
+    {
+        var song = _queueManager.EnqueuePreviousSong();
+
+        if (song == null)
+        {
+            return;
+        }
+
+        OnNewSongPlaying(song);
+    }
+
+    [RelayCommand]
+    private void QueueSongSelected(SongModel song)
     {
         var index = Songs.IndexOf(song);
 
-        CurrentSongIndex = index;
+        var newSong = _queueManager.EnqueueSongByIndex(index);
 
-        EnqueueNextSong();
+        if (newSong == null)
+        {
+            return;
+        }
 
-        return Task.CompletedTask;
+        OnNewSongPlaying(newSong);
     }
 
     private ImageSource TryGetSongCover(string songPath)
@@ -186,6 +208,23 @@ public partial class PlayerViewModel : BaseViewModel
             : ImageSource.FromFile("album_100dp.png");
 
         return result;
+    }
+
+    private void OnNewSongPlaying(SongModel newSong)
+    {
+        Title = newSong.Title;
+        Artist = newSong.Artist;
+        Album = newSong.Album;
+        Duration = newSong.Duration;
+        DurationTimeSliderValue = Duration.TotalSeconds;
+
+        Cover = newSong.CoverImage;
+
+        Songs.FirstOrDefault(song => song.Path == newSong.Path)!.IsPlaying = true;
+
+        CurrentSongPath = MediaSource.FromFile(Songs[Songs.IndexOf(newSong)].Path);
+
+        UpdateStringRepresentation();
     }
 
     private void UpdateStringRepresentation()
