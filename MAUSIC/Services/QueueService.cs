@@ -4,131 +4,75 @@ namespace MAUSIC.Services;
 
 public class QueueService
 {
-    private IList<SongModel>? _queue;
-    private SongModel? _currentSong;
-    private int _currentSongIndex;
-
-    public IList<SongModel>? GetAllSongs()
+    public void RemoveSongFromQueue(SongsQueue? queue, SongModel? song)
     {
-        return _queue;
+        if (queue?.Songs == null || queue.Songs.Count == 0 || song == null)
+        {
+            return;
+        }
+
+        var index = queue.Songs.IndexOf(song);
+        queue.Songs.Remove(song);
+
+        if (queue.CurrentSongIndex > index)
+        {
+            queue.CurrentSongIndex--;
+        }
+        else if(queue.CurrentSongIndex == index)
+        {
+            // NOTE: this will call underlying logic to set proper index and current song
+            queue.CurrentSongIndex = index;
+        }
     }
 
-    public SongModel? GetCurrentSong()
+    public void ChangeSongPositionInQueue(SongsQueue? queue, int previousIndex, int newIndex)
     {
-        return _currentSong;
+        if (queue?.Songs == null || queue.Songs.Count == 0)
+        {
+            return;
+        }
+
+        var song = queue.Songs[previousIndex];
+        queue.Songs.RemoveAt(previousIndex);
+        queue.Songs.Insert(newIndex, song);
+
+        if (queue.CurrentSongIndex > newIndex && queue.CurrentSongIndex < previousIndex)
+        {
+            queue.CurrentSongIndex++;
+        }
+        else if (queue.CurrentSongIndex < newIndex && queue.CurrentSongIndex > previousIndex)
+        {
+            queue.CurrentSongIndex--;
+        }
     }
 
-    public SongModel? InitQueue(IList<SongModel> queue)
+    public void EnqueueNextSong(SongsQueue? queue)
     {
-        _queue = queue;
-        _currentSongIndex = 0;
-        _currentSong = _queue[_currentSongIndex];
+        if (queue?.Songs == null || queue.Songs.Count == 0)
+        {
+            return;
+        }
 
-        return HandleIndexChanged();
+        queue.CurrentSongIndex++;
     }
 
-    public IList<SongModel>? AddSongToQueue(SongModel song)
+    public void EnqueuePreviousSong(SongsQueue? queue)
     {
-        _queue?.Add(song);
+        if (queue?.Songs == null || queue.Songs.Count == 0)
+        {
+            return;
+        }
 
-        return _queue;
+        queue.CurrentSongIndex--;
     }
 
-    public IList<SongModel>? RemoveSongFromQueue(SongModel song)
+    public void EnqueueSongByIndex(SongsQueue? queue, int songIndex)
     {
-        var index = _queue?.IndexOf(song);
-        _queue?.Remove(song);
-
-        if (_currentSongIndex > index)
+        if (queue?.Songs == null || queue.Songs.Count == 0)
         {
-            _currentSongIndex--;
-        }
-        else if(_currentSongIndex == index)
-        {
-            HandleIndexChanged();
+            return;
         }
 
-        return _queue;
-    }
-
-    public IList<SongModel>? ChangeSongPositionInQueue(int previousIndex, int newIndex)
-    {
-        if (_queue == null)
-        {
-            return null;
-        }
-
-        var song = _queue[previousIndex];
-        _queue.RemoveAt(previousIndex);
-        _queue.Insert(newIndex, song);
-
-        if (_currentSongIndex > newIndex && _currentSongIndex < previousIndex)
-        {
-            _currentSongIndex++;
-        }
-        else if (_currentSongIndex < newIndex && _currentSongIndex > previousIndex)
-        {
-            _currentSongIndex--;
-        }
-
-        return _queue;
-    }
-
-    public SongModel? EnqueueNextSong()
-    {
-        if (_queue == null)
-        {
-            return null;
-        }
-
-        _currentSongIndex++;
-
-        return HandleIndexChanged();
-    }
-
-    public SongModel? EnqueuePreviousSong()
-    {
-        if (_queue == null)
-        {
-            return null;
-        }
-
-        _currentSongIndex--;
-
-        return HandleIndexChanged();
-    }
-
-    public SongModel? EnqueueSongByIndex(int songIndex)
-    {
-        if (_queue == null)
-        {
-            return null;
-        }
-
-        _currentSongIndex = songIndex;
-
-        return HandleIndexChanged();
-    }
-
-    private SongModel? HandleIndexChanged()
-    {
-        if (_currentSongIndex >= _queue!.Count)
-        {
-            _currentSongIndex = 0;
-        }
-        else if(_currentSongIndex < 0)
-        {
-            _currentSongIndex = _queue.Count - 1;
-        }
-
-        var currentPlayingSong = _queue.FirstOrDefault(song => song.IsPlaying);
-        if (currentPlayingSong != null)
-        {
-            currentPlayingSong.IsPlaying = false;
-        }
-
-        _currentSong = _queue[_currentSongIndex];
-
-        return _currentSong;
+        queue.CurrentSongIndex = songIndex;
     }
 }

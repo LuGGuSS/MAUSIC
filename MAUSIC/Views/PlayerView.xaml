@@ -124,7 +124,7 @@
             Grid.Column="1"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
-            ItemsSource="{Binding Songs}">
+            ItemsSource="{Binding Queue.Songs}">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SongModel">

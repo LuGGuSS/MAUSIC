@@ -12,66 +12,53 @@ public class QueueManager
         _queueService = queueService;
     }
 
-    public IList<SongModel>? GetAllSongs()
+    public void RemoveSongFromQueue(SongsQueue? queue, SongModel? song)
     {
-        var songs = _queueService.GetAllSongs();
+        if (queue == null || song == null)
+        {
+            return;
+        }
 
-        return songs;
+        _queueService.RemoveSongFromQueue(queue, song);
     }
 
-    public SongModel? GetCurrentSong()
+    public void ChangeSongPositionInQueue(SongsQueue? queue, int previousIndex, int newIndex)
     {
-        var song = _queueService.GetCurrentSong();
+        if (queue == null)
+        {
+            return;
+        }
 
-        return song;
+        _queueService.ChangeSongPositionInQueue(queue, previousIndex, newIndex);
     }
 
-    public SongModel? InitQueue(IList<SongModel> queue)
+    public void EnqueueNextSong(SongsQueue? queue)
     {
-        var song = _queueService.InitQueue(queue);
+        if (queue == null)
+        {
+            return;
+        }
 
-        return song;
+        _queueService.EnqueueNextSong(queue);
     }
 
-    public IList<SongModel>? AddSongToQueue(SongModel song)
+    public void EnqueuePreviousSong(SongsQueue? queue)
     {
-        var songs = _queueService.AddSongToQueue(song);
+        if (queue == null)
+        {
+            return;
+        }
 
-        return songs;
+        _queueService.EnqueuePreviousSong(queue);
     }
 
-    public IList<SongModel>? RemoveSongFromQueue(SongModel song)
+    public void EnqueueSongByIndex(SongsQueue? queue, int songIndex)
     {
-        var songs = _queueService.RemoveSongFromQueue(song);
+        if (queue == null)
+        {
+            return;
+        }
 
-        return songs;
-    }
-
-    public IList<SongModel>? ChangeSongPositionInQueue(int previousIndex, int newIndex)
-    {
-        var songs = _queueService.ChangeSongPositionInQueue(previousIndex, newIndex);
-
-        return songs;
-    }
-
-    public SongModel? EnqueueNextSong()
-    {
-        var song = _queueService.EnqueueNextSong();
-
-        return song;
-    }
-
-    public SongModel? EnqueuePreviousSong()
-    {
-        var song = _queueService.EnqueuePreviousSong();
-
-        return song;
-    }
-
-    public SongModel? EnqueueSongByIndex(int songIndex)
-    {
-        var song = _queueService.EnqueueSongByIndex(songIndex);
-
-        return song;
+        _queueService.EnqueueSongByIndex(queue, songIndex);
     }
 }
