@@ -2,12 +2,12 @@
 using CommunityToolkit.Maui.Storage;
 using MAUSIC.Managers;
 using MAUSIC.Services;
-using MAUSIC.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Storage;
+using PlayerPageModel = MAUSIC.PageModels.PlayerPageModel;
 
 namespace MAUSIC;
 
@@ -36,19 +36,27 @@ public static class MauiProgram
 
 		// Registering Services
 		builder.Services
-			.AddSingleton<StorageService>()
 			.AddSingleton<DatabaseService>()
-			.AddSingleton<QueueService>();
+			.AddSingleton<HistoryService>()
+			.AddSingleton<PlaylistService>()
+			.AddSingleton<QueueService>()
+			.AddSingleton<RecommendationService>()
+			.AddSingleton<SongsService>()
+			.AddSingleton<StorageService>();
 
 		// Registering Managers
 		builder.Services
-			.AddSingleton<StorageManager>()
 			.AddSingleton<DatabaseManager>()
-			.AddSingleton<QueueManager>();
+			.AddSingleton<HistoryManager>()
+			.AddSingleton<PlaylistManager>()
+			.AddSingleton<QueueManager>()
+			.AddSingleton<RecommendationManager>()
+			.AddSingleton<SongsManager>()
+			.AddSingleton<StorageManager>();
 
 		// Registering ViewModels
 		builder.Services
-			.AddSingleton<PlayerViewModel>();
+			.AddSingleton<PlayerPageModel>();
 
 		return builder.Build();
 	}

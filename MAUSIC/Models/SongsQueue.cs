@@ -44,13 +44,13 @@ public class SongsQueue : BaseModel
 
             if(SetField(ref _currentSongIndex, value))
             {
-                var currentPlayingSong = Songs.FirstOrDefault(song => song.IsPlaying);
-                if (currentPlayingSong != null)
+                if (CurrentSong != null)
                 {
-                    currentPlayingSong.IsPlaying = false;
+                    CurrentSong.IsPlaying = false;
                 }
 
                 CurrentSong = Songs[CurrentSongIndex];
+                CurrentSong.IsPlaying = true;
             }
         }
     }

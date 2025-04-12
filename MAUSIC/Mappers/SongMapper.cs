@@ -14,6 +14,7 @@ public static class SongMapper
 
         var entity = new SongEntity
         {
+            Id = model.Id,
             Album = model.Album,
             Artist = model.Artist,
             Duration = model.Duration,
@@ -33,6 +34,7 @@ public static class SongMapper
 
         var model = new SongModel
         {
+            Id = entity.Id,
             Album = entity.Album,
             Artist = entity.Artist,
             Duration = entity.Duration,
