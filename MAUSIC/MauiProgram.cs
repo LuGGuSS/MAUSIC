@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
 using MAUSIC.Managers;
+using MAUSIC.PageModels;
 using MAUSIC.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -54,9 +55,11 @@ public static class MauiProgram
 			.AddSingleton<SongsManager>()
 			.AddSingleton<StorageManager>();
 
-		// Registering ViewModels
+		// Registering PageModels
 		builder.Services
-			.AddSingleton<PlayerPageModel>();
+			.AddSingleton<FoldersPageModel>()
+			.AddSingleton<PlayerPageModel>()
+			.AddSingleton<PlaylistsPageModel>();
 
 		return builder.Build();
 	}
