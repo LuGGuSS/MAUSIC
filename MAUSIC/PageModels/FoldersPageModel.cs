@@ -82,7 +82,7 @@ public partial class FoldersPageModel : BasePageModel
     [RelayCommand]
     public async Task SongSelected(SongModel model)
     {
-        var songs = SelectedFolderModel.InnerItems.OfType<SongModel>().ToObservableCollection();
+        var songs = SelectedFolderModel.InnerItems.OfType<SongModel>().ToList();
 
         var queue = _queueManager.GetCurrentSongsQueue?.Invoke();
 

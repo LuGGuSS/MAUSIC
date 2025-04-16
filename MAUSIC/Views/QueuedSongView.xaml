@@ -27,8 +27,8 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <Image
@@ -39,10 +39,10 @@
                 Grid.Column="0"/>
 
             <VerticalStackLayout
-                Margin="10"
+                Margin="8"
                 Spacing="4"
                 HorizontalOptions="Fill"
-                VerticalOptions="Center"
+                VerticalOptions="Fill"
                 Grid.Column="1">
 
                 <Label

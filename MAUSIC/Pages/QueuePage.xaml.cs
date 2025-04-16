@@ -14,9 +14,4 @@ public partial class QueuePage
     {
         InitializeComponent();
     }
-
-    private void RequestFilesButtonClicked(object? sender, EventArgs e)
-    {
-        _ = PageModel.RequestFiles();
-    }
 }

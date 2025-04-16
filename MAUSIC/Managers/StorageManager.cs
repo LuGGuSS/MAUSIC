@@ -2,6 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+#if ANDROID
+using Android;
+using Android.Content.PM;
+using Android.OS;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
+#endif
 using MAUSIC.Data.Entities;
 using MAUSIC.Mappers;
 using MAUSIC.Models;
@@ -30,6 +37,28 @@ public class StorageManager
 
     public async Task<List<string>?> PickFolder()
     {
+#if ANDROID
+        if ((int)Build.VERSION.SdkInt >= 33) // Android 13+
+        {
+            // For Android 13+, use Media permissions
+#pragma warning disable CA1416
+            var permission = Manifest.Permission.ReadMediaAudio;
+#pragma warning restore CA1416
+            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
+            }
+        }
+        else
+        {
+            var permission = Manifest.Permission.ReadExternalStorage;
+            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
+            }
+        }
+#endif
+
         var result = await _storageService.PickFolder();
 
         if (result == null || !result.IsSuccessful)
@@ -87,7 +116,7 @@ public class StorageManager
             string extension = Path.GetExtension(file).ToLower();
             if (Array.Exists(_musicFileExtensions, ext => ext == extension))
             {
-                var entity = _songsManager.GetSongFromPath(file);
+                var entity = await _songsManager.GetSongFromPath(file);
 
                 var model = entity.Map();
 
@@ -121,9 +150,10 @@ public class StorageManager
         foreach (var file in files)
         {
             string extension = Path.GetExtension(file).ToLower();
+
             if (Array.Exists(_musicFileExtensions, ext => ext == extension))
             {
-                var entity = _songsManager.GetSongFromPath(file);
+                var entity = await _songsManager.GetSongFromPath(file);
 
                 var model = entity.Map();
 

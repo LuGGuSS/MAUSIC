@@ -31,18 +31,6 @@ public partial class QueuePageModel : BasePageModel
         return Task.CompletedTask;
     }
 
-    public async Task RequestFiles()
-    {
-        var files = await _storageManager.PickFolder();
-
-        if (files == null || files.Count == 0)
-        {
-            return;
-        }
-
-        await _songsManager.LoadSongsFromFilesAsync(files);
-    }
-
     [RelayCommand]
     private void QueueSongSelected(SongModel song)
     {

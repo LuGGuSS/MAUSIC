@@ -50,7 +50,8 @@ public static class SongMapper
     {
         var tags = TagLib.File.Create(songPath);
 
-        var result =tags.Tag.Pictures.Length > 0
+        // TODO: implement downsampling
+        var result = tags.Tag.Pictures.Length > 0
             ? ImageSource.FromStream(() => new MemoryStream(tags.Tag.Pictures[0].Data.Data))
             : ImageSource.FromFile("album_100dp.png");
 

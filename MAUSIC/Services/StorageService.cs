@@ -38,24 +38,36 @@ public class StorageService
 
     public async Task<List<string>> GetFilesRecursive(string folderPath)
     {
-        var files = Directory.GetFiles(folderPath).ToList();
-
-        var folders = Directory.GetDirectories(folderPath).ToList();
-
-        if (folders.Count > 0)
+        try
         {
-            foreach (var folder in folders)
-            {
-                files.AddRange(await GetFilesRecursive(folder));
-            }
-        }
+            var files = Directory.GetFiles(folderPath).ToList();
 
-        return files;
+            var folders = Directory.GetDirectories(folderPath).ToList();
+
+            if (folders.Count > 0)
+            {
+                foreach (var folder in folders)
+                {
+                    files.AddRange(await GetFilesRecursive(folder));
+                }
+            }
+
+            files.Sort();
+
+            return files;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public List<string> GetInnerFolders(string folderPath)
     {
         var folders = Directory.GetDirectories(folderPath).ToList();
+
+        folders.Sort();
 
         return folders;
     }
@@ -63,6 +75,8 @@ public class StorageService
     public List<string> GetInnerFiles(string folderPath)
     {
         var files = Directory.GetFiles(folderPath).ToList();
+
+        files.Sort();
 
         return files;
     }

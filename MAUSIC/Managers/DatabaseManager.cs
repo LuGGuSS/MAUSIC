@@ -45,6 +45,8 @@ public class DatabaseManager
 
         var result = await _databaseService.SaveItemAsync(item);
 
+        item.Id = result;
+
         return result;
     }
 

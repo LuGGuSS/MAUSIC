@@ -9,11 +9,11 @@ public class SongsQueue : BaseModel
 
     private SongModel? _currentSong;
 
-    private ObservableCollection<SongModel>? _songs;
+    private List<SongModel>? _songs;
 
     public Action? OnNewSongPlaying { get; set; }
 
-    public ObservableCollection<SongModel>? Songs
+    public List<SongModel>? Songs
     {
         get => _songs;
         set

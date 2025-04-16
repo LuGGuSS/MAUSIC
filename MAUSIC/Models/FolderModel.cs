@@ -11,7 +11,7 @@ public class FolderModel : BaseModel
 
     public string Title => Path.Split("/").Last();
 
-    public ObservableCollection<BaseModel> InnerItems { get; set; } = new();
+    public List<BaseModel> InnerItems { get; set; } = new();
 
     public FolderModel? Parent { get; set; }
 }

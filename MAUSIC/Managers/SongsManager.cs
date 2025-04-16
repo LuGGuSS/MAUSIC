@@ -8,13 +8,16 @@ public class SongsManager
 {
     private readonly SongsService _songsService;
     private readonly QueueManager _queueManager;
+    private readonly DatabaseManager _databaseManager;
 
     public SongsManager(
         SongsService songsService,
-        QueueManager queueManager)
+        QueueManager queueManager,
+        DatabaseManager databaseManager)
     {
         _songsService = songsService;
         _queueManager = queueManager;
+        _databaseManager = databaseManager;
     }
 
     public async Task LoadSongsFromFilesAsync(IList<string> files)
@@ -32,13 +35,20 @@ public class SongsManager
         {
             _queueManager.GetCurrentSongsQueue.Invoke().Songs = songModels
                 .OrderBy(songModel => songModel.Path)
-                .ToObservableCollection();
+                .ToList();
         }
     }
 
-    public SongEntity GetSongFromPath(string path)
+    public async Task<SongEntity> GetSongFromPath(string path)
     {
-        var entity = _songsService.GetSongEntityFromPath(path);
+        var entity = await _databaseManager.GetItemAsync<SongEntity>((entity) => entity.Path == path);
+
+        if (entity == null)
+        {
+            entity = _songsService.GetSongEntityFromPath(path);
+
+            await _databaseManager.SaveItemAsync(entity);
+        }
 
         return entity;
     }

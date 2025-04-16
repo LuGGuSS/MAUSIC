@@ -16,7 +16,7 @@
             Grid.Column="0"
             Margin="16"
             Spacing="16"
-            HorizontalOptions="Center"
+            HorizontalOptions="Fill"
             VerticalOptions="Center">
 
             <Image
