@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using MAUSIC.Models.Abstract;
 
 namespace MAUSIC.Models;
@@ -8,9 +9,11 @@ public class SongsQueue : BaseModel
 
     private SongModel? _currentSong;
 
-    private IList<SongModel>? _songs;
+    private ObservableCollection<SongModel>? _songs;
 
-    public IList<SongModel>? Songs
+    public Action? OnNewSongPlaying { get; set; }
+
+    public ObservableCollection<SongModel>? Songs
     {
         get => _songs;
         set
@@ -51,6 +54,8 @@ public class SongsQueue : BaseModel
 
                 CurrentSong = Songs[CurrentSongIndex];
                 CurrentSong.IsPlaying = true;
+
+                OnNewSongPlaying?.Invoke();
             }
         }
     }

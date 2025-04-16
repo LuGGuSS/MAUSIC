@@ -9,7 +9,7 @@ namespace MAUSIC.Pages;
 
 public partial class QueuePage
 {
-    public QueuePage(PlayerPageModel vm)
+    public QueuePage(QueuePageModel vm)
         : base(vm)
     {
         InitializeComponent();
@@ -17,9 +17,6 @@ public partial class QueuePage
 
     private void RequestFilesButtonClicked(object? sender, EventArgs e)
     {
-        if (PageModel.CurrentSongPath == null)
-        {
-            _ = PageModel.RequestFiles();
-        }
+        _ = PageModel.RequestFiles();
     }
 }

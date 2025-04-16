@@ -12,6 +12,8 @@ public class QueueManager
         _queueService = queueService;
     }
 
+    public Func<SongsQueue>? GetCurrentSongsQueue { get; set; }
+
     public void RemoveSongFromQueue(SongsQueue? queue, SongModel? song)
     {
         if (queue == null || song == null)

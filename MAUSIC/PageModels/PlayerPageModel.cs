@@ -12,6 +12,7 @@ namespace MAUSIC.PageModels;
 public partial class PlayerPageModel : BasePageModel
 {
     private readonly StorageManager _storageManager;
+    private readonly SongsManager _songsManager;
     private readonly DatabaseManager _databaseManager;
     private readonly QueueManager _queueManager;
 
@@ -43,12 +44,17 @@ public partial class PlayerPageModel : BasePageModel
 
     public PlayerPageModel(
         StorageManager storageManager,
+        SongsManager songsManager,
         DatabaseManager databaseManager,
         QueueManager queueManager)
     {
         _storageManager = storageManager;
+        _songsManager = songsManager;
         _databaseManager = databaseManager;
         _queueManager = queueManager;
+
+        _queueManager.GetCurrentSongsQueue = () => Queue;
+        Queue.OnNewSongPlaying = OnNewSongPlaying;
 
         _cancellationTokenSource = new CancellationTokenSource();
     }
@@ -80,173 +86,24 @@ public partial class PlayerPageModel : BasePageModel
             files.AddRange(resultFiles);
         }
 
-        await LoadSongsFromFiles(files);
-    }
-
-    public async Task RequestFiles()
-    {
-        var files = await _storageManager.PickFolder();
-
-        if (files == null || files.Count == 0)
-        {
-            return;
-        }
-
-        await LoadSongsFromFiles(files);
-    }
-
-    private async Task LoadSongsFromFiles(IList<string> files)
-    {
-        var songsEntities = new List<SongEntity>();
-
-        var dbCheckTasks = new List<Task>();
-
-        foreach (var file in files)
-        {
-            var existingSong = await _databaseManager.GetItemAsync<SongEntity>((song) => song.Path == file);
-
-            if (existingSong != null)
-            {
-                continue;
-            }
-
-            var task = Task.Run(() =>
-            {
-                try
-                {
-                    var tagsFile = TagLib.File.Create(file);
-
-                    var song = new SongEntity
-                    {
-                        Title = tagsFile.Tag.Title,
-                        Artist = tagsFile.Tag.FirstPerformer,
-                        Album = tagsFile.Tag.Album,
-                        Duration = tagsFile.Properties.Duration,
-                        Path = file
-                    };
-
-                    _semaphore.Wait();
-                    songsEntities.Add(song);
-                    _semaphore.Release();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-            });
-
-            dbCheckTasks.Add(task);
-        }
-
-        await Task.WhenAll(dbCheckTasks);
-
-        await _databaseManager.SaveItemsAsync(songsEntities);
-
-        var allSongEntities = await _databaseManager.GetAllItems<SongEntity>();
-
-        if (allSongEntities == null)
-        {
-            return;
-        }
-
-        var songModels = new List<SongModel>();
-
-        var initSongEntityTasks = new List<Task>();
-
-        foreach (var song in allSongEntities)
-        {
-            var task = Task.Run(() =>
-            {
-                var model = song.Map();
-
-                if (model == null)
-                {
-                    return;
-                }
-
-                model.CoverImage = TryGetSongCover(song.Path);
-
-                _semaphore.Wait();
-                songModels.Add(model);
-                _semaphore.Release();
-            });
-
-            initSongEntityTasks.Add(task);
-        }
-
-        await Task.WhenAll(initSongEntityTasks);
-
-        Queue.Songs = songModels.OrderBy(songModel => songModel.Path).ToList();
-
-        if (Queue.CurrentSong == null)
-        {
-            return;
-        }
-
-        OnNewSongPlaying();
+        await _songsManager.LoadSongsFromFilesAsync(files);
     }
 
     [RelayCommand]
     private void EnqueueNextSong()
     {
         _queueManager.EnqueueNextSong(Queue);
-
-        if (Queue.CurrentSong == null)
-        {
-            return;
-        }
-
-        OnNewSongPlaying();
     }
 
     [RelayCommand]
     private void EnqueuePreviousSong()
     {
         _queueManager.EnqueuePreviousSong(Queue);
-
-        if (Queue.CurrentSong == null)
-        {
-            return;
-        }
-
-        OnNewSongPlaying();
-    }
-
-    [RelayCommand]
-    private void QueueSongSelected(SongModel song)
-    {
-        if (Queue.Songs == null)
-        {
-            return;
-        }
-
-        var index = Queue.Songs.IndexOf(song);
-
-        _queueManager.EnqueueSongByIndex(Queue, index);
-
-        if (Queue.CurrentSong == null)
-        {
-            return;
-        }
-
-        OnNewSongPlaying();
-    }
-
-    private ImageSource TryGetSongCover(string songPath)
-    {
-        var tags = TagLib.File.Create(songPath);
-
-        var result =tags.Tag.Pictures.Length > 0
-            ? ImageSource.FromStream(() => new MemoryStream(tags.Tag.Pictures[0].Data.Data))
-            : ImageSource.FromFile("album_100dp.png");
-
-        return result;
     }
 
     private void OnNewSongPlaying()
     {
-        if (Queue?.Songs == null || Queue.CurrentSong == null)
+        if (Queue.Songs == null || Queue.CurrentSong == null)
         {
             return;
         }

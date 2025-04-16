@@ -1,9 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUSIC.Pages.FoldersPage">
+<abstract:BasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:abstract="clr-namespace:MAUSIC.Pages.Abstract"
+    xmlns:models="clr-namespace:MAUSIC.Models"
+    xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
+    xmlns:views="clr-namespace:MAUSIC.Views"
+    xmlns:selectors="clr-namespace:MAUSIC.Data.TemplateSelectors"
+    x:DataType="pageModels:FoldersPageModel"
+    x:TypeArguments="pageModels:FoldersPageModel"
+    x:Class="MAUSIC.Pages.FoldersPage">
+
+    <ContentPage.Resources>
+
+        <DataTemplate
+            x:Key="FolderTemplate"
+            x:DataType="models:FolderModel">
+            <views:FolderView
+                HeightRequest="100">
+                <views:FolderView.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{
+                                    Binding FolderSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type pageModels:FoldersPageModel}},
+                                    x:DataType=pageModels:FoldersPageModel}"
+                        CommandParameter="{Binding .}"/>
+                </views:FolderView.GestureRecognizers>
+            </views:FolderView>
+
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="SongTemplate"
+            x:DataType="models:SongModel">
+            <views:QueuedSongView
+                HeightRequest="100">
+                <views:QueuedSongView.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{
+                                    Binding SongSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type pageModels:FoldersPageModel}},
+                                    x:DataType=pageModels:FoldersPageModel}"
+                                    CommandParameter="{Binding .}"/>
+                </views:QueuedSongView.GestureRecognizers>
+            </views:QueuedSongView>
+        </DataTemplate>
+
+        <selectors:FolderContentsTemplateSelector x:Key="FolderContentsTemplateSelector"
+                                                  FolderTemplate="{StaticResource FolderTemplate}"
+                                                  SongTemplate="{StaticResource SongTemplate}" />
+
+    </ContentPage.Resources>
+
     <ContentPage.Content>
-        
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+
+
+            <CollectionView
+                x:Name="ContentsCollectionView"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                ItemsSource="{Binding SelectedFolderModel.InnerItems}"
+                ItemTemplate="{StaticResource FolderContentsTemplateSelector}">
+
+                <CollectionView.Header>
+                    <Grid HeightRequest="200"
+                          WidthRequest="200"
+                          HorizontalOptions="Fill"
+                          VerticalOptions="Fill">
+                        <Image Source="folder.png"
+                               Aspect="AspectFill"
+                               Height="200"
+                               Width="200"/>
+                    </Grid>
+                </CollectionView.Header>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Spacing="16">
+
+                        <Label
+                            MaxLines="2"
+                            Text="Please give access to folder containing music."
+                            Style="{StaticResource Headline}"/>
+
+                        <Button
+                            WidthRequest="48"
+                            HeightRequest="48"
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            ImageSource="library_music_24dp.png"
+                            Clicked="RequestFilesButtonClicked"/>
+
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <Border
+                Grid.Row="1"
+                Height="50"
+                IsVisible="{Binding ShouldShowFooter}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
+                </Border.GestureRecognizers>
+                <Label Text="Navigate back"
+                       Style="{StaticResource Headline}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+
+        </Grid>
     </ContentPage.Content>
-</ContentPage>
+
+</abstract:BasePage>

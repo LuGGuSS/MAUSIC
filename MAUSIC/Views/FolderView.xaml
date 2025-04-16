@@ -1,7 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUSIC.Views.FolderView">
-    
+<ContentView  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:models="clr-namespace:MAUSIC.Models"
+              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+              x:Class="MAUSIC.Views.FolderView"
+              x:DataType="models:FolderModel">
+
+    <Border
+        Padding="0, 0, 20, 0">
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Source="folder.png"
+                Aspect="AspectFit"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Grid.Column="0"/>
+
+            <Label
+                Text="{Binding Title}"
+                Style="{StaticResource Headline}"
+                HorizontalTextAlignment="Start"
+                Margin="10"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center"
+                Grid.Column="1"/>
+
+        </Grid>
+
+    </Border>
+
 </ContentView>

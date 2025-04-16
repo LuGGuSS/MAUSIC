@@ -59,7 +59,8 @@ public static class MauiProgram
 		builder.Services
 			.AddSingleton<FoldersPageModel>()
 			.AddSingleton<PlayerPageModel>()
-			.AddSingleton<PlaylistsPageModel>();
+			.AddSingleton<PlaylistsPageModel>()
+			.AddSingleton<QueuePageModel>();
 
 		return builder.Build();
 	}

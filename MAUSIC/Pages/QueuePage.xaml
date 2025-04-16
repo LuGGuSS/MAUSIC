@@ -8,13 +8,12 @@
     xmlns:models="clr-namespace:MAUSIC.Models"
     xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
     xmlns:views="clr-namespace:MAUSIC.Views"
-    x:DataType="pageModels:PlayerPageModel"
+    x:DataType="pageModels:QueuePageModel"
     x:Class="MAUSIC.Pages.QueuePage"
-    x:TypeArguments="pageModels:PlayerPageModel">
+    x:TypeArguments="pageModels:QueuePageModel">
 
     <ContentPage.Content>
         <CollectionView
-            Grid.Column="1"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
             ItemsSource="{Binding Queue.Songs}">
@@ -27,8 +26,8 @@
                             <TapGestureRecognizer
                                 Command="{
                                     Binding QueueSongSelectedCommand,
-                                    Source={RelativeSource AncestorType={x:Type pageModels:PlayerPageModel}},
-                                    x:DataType=pageModels:PlayerViewModel}"
+                                    Source={RelativeSource AncestorType={x:Type pageModels:QueuePageModel}},
+                                    x:DataType=pageModels:QueuePageModel}"
                                 CommandParameter="{Binding .}"/>
                         </views:QueuedSongView.GestureRecognizers>
                     </views:QueuedSongView>

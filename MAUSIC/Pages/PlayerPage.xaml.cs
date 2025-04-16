@@ -3,6 +3,7 @@ using PlayerPageModel = MAUSIC.PageModels.PlayerPageModel;
 
 namespace MAUSIC.Pages;
 
+[QueryProperty(nameof(StartPlayingNavigationProperty), "StartPlaying")]
 public partial class PlayerPage
 {
     private bool _isDragging;
@@ -11,6 +12,19 @@ public partial class PlayerPage
         :base(vm)
     {
         InitializeComponent();
+    }
+
+    public bool StartPlayingNavigationProperty
+    {
+        set
+        {
+            if (value)
+            {
+                MusicPlayer.Stop();
+
+                StartPlayingSong();
+            }
+        }
     }
 
     private void StartPlayingSong()
