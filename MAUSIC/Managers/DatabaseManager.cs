@@ -30,7 +30,7 @@ public class DatabaseManager
         return result;
     }
 
-    public async Task<List<TEntity>> GetAllItems<TEntity>() where TEntity : BaseEntity, new()
+    public async Task<List<TEntity>?> GetAllItems<TEntity>() where TEntity : BaseEntity, new()
     {
         await _databaseService.TryCreateTableAsync<TEntity>();
 

@@ -39,9 +39,16 @@ public partial class PlayerPage
 
     private void OnDragCompleted(object? sender, EventArgs e)
     {
+        _isDragging = false;
+
+        if (PageModel.CurrentSongPath == null)
+        {
+            Slider.Value = 0;
+            return;
+        }
+
         var newTime = TimeSpan.FromSeconds(Slider.Value);
         MusicPlayer.SeekTo(newTime);
-        _isDragging = false;
     }
 
     private void OnSkipPreviousButtonClicked(object? sender, EventArgs e)
@@ -118,13 +125,5 @@ public partial class PlayerPage
             MusicPlayer.CurrentState == MediaElementState.Playing
                 ? "pause_24dp.png"
                 : "play_arrow_24dp.png");
-    }
-
-    private void RequestFilesButton(object? sender, EventArgs e)
-    {
-        if (PageModel.CurrentSongPath == null)
-        {
-            _ = PageModel.RequestFiles();
-        }
     }
 }

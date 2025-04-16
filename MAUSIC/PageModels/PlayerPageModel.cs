@@ -11,7 +11,6 @@ namespace MAUSIC.PageModels;
 
 public partial class PlayerPageModel : BasePageModel
 {
-
     private readonly StorageManager _storageManager;
     private readonly DatabaseManager _databaseManager;
     private readonly QueueManager _queueManager;
@@ -56,21 +55,48 @@ public partial class PlayerPageModel : BasePageModel
 
     protected override async Task InitializeAsync()
     {
-        Title = "Song";
-        Artist = "Artist";
-        Album = "Album";
-        UpdateStringRepresentation();
+        await InitialLoadSongs();
+    }
+
+    private async Task InitialLoadSongs()
+    {
+        var folders = await _databaseManager.GetAllItems<FolderEntity>();
+
+        if (folders == null || folders.Count == 0)
+        {
+            Title = "Song";
+            Artist = "Artist";
+            Album = "Album";
+            UpdateStringRepresentation();
+
+            return;
+        }
+
+        List<string> files = new List<string>();
+
+        foreach (var folder in folders)
+        {
+            var resultFiles = await _storageManager.GetMusicFiles(folder.Path);
+            files.AddRange(resultFiles);
+        }
+
+        await LoadSongsFromFiles(files);
     }
 
     public async Task RequestFiles()
     {
         var files = await _storageManager.PickFolder();
 
-        if (files == null)
+        if (files == null || files.Count == 0)
         {
             return;
         }
 
+        await LoadSongsFromFiles(files);
+    }
+
+    private async Task LoadSongsFromFiles(IList<string> files)
+    {
         var songsEntities = new List<SongEntity>();
 
         var dbCheckTasks = new List<Task>();
@@ -84,20 +110,30 @@ public partial class PlayerPageModel : BasePageModel
                 continue;
             }
 
-            var task = new Task(() =>
+            var task = Task.Run(() =>
             {
-                var tagsFile = TagLib.File.Create(file);
-
-                var song = new SongEntity
+                try
                 {
-                    Title = tagsFile.Tag.Title,
-                    Artist = tagsFile.Tag.FirstPerformer,
-                    Album = tagsFile.Tag.Album,
-                    Duration = tagsFile.Properties.Duration,
-                    Path = file
-                };
+                    var tagsFile = TagLib.File.Create(file);
 
-                songsEntities.Add(song);
+                    var song = new SongEntity
+                    {
+                        Title = tagsFile.Tag.Title,
+                        Artist = tagsFile.Tag.FirstPerformer,
+                        Album = tagsFile.Tag.Album,
+                        Duration = tagsFile.Properties.Duration,
+                        Path = file
+                    };
+
+                    _semaphore.Wait();
+                    songsEntities.Add(song);
+                    _semaphore.Release();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             });
 
             dbCheckTasks.Add(task);
@@ -108,6 +144,11 @@ public partial class PlayerPageModel : BasePageModel
         await _databaseManager.SaveItemsAsync(songsEntities);
 
         var allSongEntities = await _databaseManager.GetAllItems<SongEntity>();
+
+        if (allSongEntities == null)
+        {
+            return;
+        }
 
         var songModels = new List<SongModel>();
 

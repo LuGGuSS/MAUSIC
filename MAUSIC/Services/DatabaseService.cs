@@ -1,5 +1,6 @@
 using MAUSIC.Data;
 using MAUSIC.Data.Constants;
+using MAUSIC.Data.Entities;
 using MAUSIC.Data.Entities.Abstract;
 using SQLite;
 
@@ -12,6 +13,8 @@ public class DatabaseService
     public DatabaseService()
     {
         _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
+        _database.DropTableAsync<FolderEntity>();
+        _database.DropTableAsync<SongEntity>();
     }
 
     public async Task TryCreateTableAsync<TEntity>()
@@ -49,7 +52,7 @@ public class DatabaseService
         }
     }
 
-    public async Task<List<TEntity>> GetAllItemsAsync<TEntity>() where TEntity : BaseEntity, new()
+    public async Task<List<TEntity>?> GetAllItemsAsync<TEntity>() where TEntity : BaseEntity, new()
     {
         try
         {
