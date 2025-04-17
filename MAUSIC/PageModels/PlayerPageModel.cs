@@ -61,7 +61,11 @@ public partial class PlayerPageModel : BasePageModel
 
     protected override async Task InitializeAsync()
     {
-        await InitialLoadSongs();
+        // await InitialLoadSongs();
+        Title = "Song";
+        Artist = "Artist";
+        Album = "Album";
+        UpdateStringRepresentation();
     }
 
     private async Task InitialLoadSongs()

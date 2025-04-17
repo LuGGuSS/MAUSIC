@@ -39,15 +39,13 @@ public class DatabaseManager
         return result;
     }
 
-    public async Task<int> SaveItemAsync<TEntity>(TEntity item) where TEntity : BaseEntity, new()
+    public async Task<bool> SaveItemAsync<TEntity>(TEntity item) where TEntity : BaseEntity, new()
     {
         await _databaseService.TryCreateTableAsync<TEntity>();
 
         var result = await _databaseService.SaveItemAsync(item);
 
-        item.Id = result;
-
-        return result;
+        return result == 1;
     }
 
     public async Task<int> SaveItemsAsync<TEntity>(IEnumerable<TEntity> items) where TEntity : BaseEntity, new()

@@ -9,9 +9,14 @@ namespace MAUSIC.Pages;
 
 public partial class QueuePage
 {
-    public QueuePage(QueuePageModel vm)
-        : base(vm)
+    public QueuePage(QueuePageModel pageModel)
+        : base(pageModel)
     {
         InitializeComponent();
+
+        // NOTE: headers behaviour is broken on desktop, it uses screen width and not window one.
+#if WINDOWS || MACCATALYST
+ContentsCollectionView.Header = null;
+#endif
     }
 }

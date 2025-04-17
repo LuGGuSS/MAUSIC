@@ -19,7 +19,7 @@
             </Grid.ColumnDefinitions>
 
             <Image
-                Source="folder.png"
+                Source="playlist_play_456dp.png"
                 Aspect="AspectFit"
                 VerticalOptions="Center"
                 HorizontalOptions="Center"

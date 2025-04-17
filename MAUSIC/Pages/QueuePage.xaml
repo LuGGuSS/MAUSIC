@@ -9,13 +9,13 @@
     xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
     xmlns:views="clr-namespace:MAUSIC.Views"
     x:DataType="pageModels:QueuePageModel"
-    x:Class="MAUSIC.Pages.QueuePage"
-    x:TypeArguments="pageModels:QueuePageModel">
+    x:TypeArguments="pageModels:QueuePageModel"
+    x:Class="MAUSIC.Pages.QueuePage">
 
     <ContentPage.Content>
 
         <CollectionView
-            x:Name="QueueCollectionView"
+            x:Name="ContentsCollectionView"
             HorizontalOptions="Fill"
             VerticalOptions="Fill"
             ItemsSource="{Binding Queue.Songs}">

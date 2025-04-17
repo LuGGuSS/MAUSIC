@@ -10,8 +10,8 @@ namespace MAUSIC.Pages;
 
 public partial class FoldersPage
 {
-    public FoldersPage(FoldersPageModel model)
-        : base(model)
+    public FoldersPage(FoldersPageModel pageModel)
+        : base(pageModel)
     {
         InitializeComponent();
 

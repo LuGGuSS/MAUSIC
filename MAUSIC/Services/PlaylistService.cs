@@ -13,6 +13,20 @@ public class PlaylistService
         _databaseManager = databaseManager;
     }
 
+    public async Task<List<PlaylistEntity>?> GetAllPlaylists()
+    {
+        var result = await _databaseManager.GetAllItems<PlaylistEntity>();
+
+        return result;
+    }
+
+    public async Task<PlaylistEntity?> GetPlaylistByTitle(string title)
+    {
+        var result = await _databaseManager.GetItemAsync<PlaylistEntity>((entity) => entity.Title == title);
+
+        return result;
+    }
+
     public async Task<PlaylistEntity> CreatePlaylist(string title)
     {
         var result = await _databaseManager.GetItemAsync<PlaylistEntity>((entity) => entity.Title == title);
@@ -27,12 +41,12 @@ public class PlaylistService
             Title = title
         };
 
-        playlistEntity.Id = await _databaseManager.SaveItemAsync(playlistEntity);
+        await _databaseManager.SaveItemAsync(playlistEntity);
 
         return playlistEntity;
     }
 
-    public async Task<PlaylistSongEntity> AddSong(PlaylistEntity playlistEntity, SongModel song)
+    public async Task<PlaylistSongEntity> AddSong(PlaylistEntity playlistEntity, SongEntity song)
     {
         var playlistSong = await _databaseManager
             .GetItemAsync<PlaylistSongEntity>((playlistSong) =>
@@ -50,15 +64,15 @@ public class PlaylistService
             SongId = song.Id
         };
 
-        playlistEntity.Id = await _databaseManager.SaveItemAsync(playlistSongEntity);
+        await _databaseManager.SaveItemAsync(playlistSongEntity);
 
         return playlistSongEntity;
     }
 
-    public async Task<List<PlaylistSongEntity>> GetPlaylistSongs(PlaylistEntity playlistEntity)
+    public async Task<List<PlaylistSongEntity>> GetPlaylistSongs(int playlistId)
     {
         var allSongs = await _databaseManager
-            .GetItemsAsync<PlaylistSongEntity>((songEntity) => songEntity.PlaylistId == playlistEntity.Id);
+            .GetItemsAsync<PlaylistSongEntity>((songEntity) => songEntity.PlaylistId == playlistId);
 
         return allSongs;
     }

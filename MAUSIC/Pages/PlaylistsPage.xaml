@@ -1,9 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MAUSIC.Pages.PlaylistsPage">
+<abstract:BasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:abstract="clr-namespace:MAUSIC.Pages.Abstract"
+    xmlns:models="clr-namespace:MAUSIC.Models"
+    xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
+    xmlns:views="clr-namespace:MAUSIC.Views"
+    xmlns:selectors="clr-namespace:MAUSIC.Data.TemplateSelectors"
+    x:DataType="pageModels:PlaylistsPageModel"
+    x:TypeArguments="pageModels:PlaylistsPageModel"
+    x:Class="MAUSIC.Pages.PlaylistsPage">
+
+    <ContentPage.Resources>
+
+        <DataTemplate
+            x:Key="PlaylistTemplate"
+            x:DataType="models:PlaylistModel">
+            <views:PlaylistView
+                HeightRequest="100">
+                <views:PlaylistView.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{
+                                    Binding PlaylistSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type pageModels:PlaylistsPageModel}},
+                                    x:DataType=pageModels:PlaylistsPageModel}"
+                        CommandParameter="{Binding .}"/>
+                </views:PlaylistView.GestureRecognizers>
+            </views:PlaylistView>
+
+        </DataTemplate>
+
+        <DataTemplate
+            x:Key="SongTemplate"
+            x:DataType="models:SongModel">
+            <views:SongView
+                HeightRequest="100">
+                <views:SongView.GestureRecognizers>
+                    <TapGestureRecognizer
+                        Command="{
+                                    Binding SongSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type pageModels:PlaylistsPageModel}},
+                                    x:DataType=pageModels:PlaylistsPageModel}"
+                                    CommandParameter="{Binding .}"/>
+                </views:SongView.GestureRecognizers>
+            </views:SongView>
+        </DataTemplate>
+
+        <selectors:PlaylistContentsTemplateSelector x:Key="PlaylistContentsTemplateSelector"
+                                                  PlaylistTemplate="{StaticResource PlaylistTemplate}"
+                                                  SongTemplate="{StaticResource SongTemplate}" />
+
+        <ResourceDictionary xmlns:converters="clr-namespace:MAUSIC.Converters">
+            <converters:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+        </ResourceDictionary>
+
+    </ContentPage.Resources>
+
     <ContentPage.Content>
-        
+
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="{Binding ShouldShowFooter, Converter={StaticResource BoolToGridLengthConverter}}" />
+            </Grid.RowDefinitions>
+
+
+            <CollectionView
+                Grid.Row="0"
+                x:Name="ContentsCollectionView"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                ItemSizingStrategy="MeasureFirstItem"
+                ItemsSource="{Binding Items}"
+                ItemTemplate="{StaticResource PlaylistContentsTemplateSelector}">
+
+                <CollectionView.Header>
+                    <Grid HeightRequest="200"
+                          WidthRequest="200"
+                          HorizontalOptions="Fill"
+                          VerticalOptions="Fill">
+                        <Image Source="playlist_play_456dp.png"
+                               Aspect="AspectFit"
+                               Height="200"
+                               Width="200"/>
+                    </Grid>
+                </CollectionView.Header>
+
+            </CollectionView>
+
+            <Border
+                Grid.Row="1"
+                HeightRequest="50"
+                IsVisible="{Binding ShouldShowFooter}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
+                </Border.GestureRecognizers>
+                <Label Text="Navigate back"
+                       Style="{StaticResource Headline}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+
+        </Grid>
+
     </ContentPage.Content>
-</ContentPage>
+</abstract:BasePage>

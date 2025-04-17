@@ -35,7 +35,7 @@ public class SongsService
             {
                 try
                 {
-                    var song = GetSongEntityFromPath(file);
+                    var song = ReadSongEntityFromPath(file);
 
                     _semaphore.Wait();
                     songsEntities.Add(song);
@@ -93,7 +93,21 @@ public class SongsService
         return songModels;
     }
 
-    public SongEntity GetSongEntityFromPath(string path)
+    public async Task<SongEntity?> GetSongEntityFromPath(string path)
+    {
+        var result = await _databaseManager.GetItemAsync<SongEntity>((entity) => entity.Path == path);
+
+        return result;
+    }
+
+    public async Task<SongEntity?> GetSongEntityFromId(int id)
+    {
+        var result = await _databaseManager.GetItemAsync<SongEntity>((entity) => entity.Id == id);
+
+        return result;
+    }
+
+    public SongEntity ReadSongEntityFromPath(string path)
     {
         var tagsFile = TagLib.File.Create(path);
 
@@ -108,4 +122,5 @@ public class SongsService
 
         return song;
     }
+
 }

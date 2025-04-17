@@ -1,4 +1,3 @@
-using MAUSIC.Data;
 using MAUSIC.Data.Constants;
 using MAUSIC.Data.Entities;
 using MAUSIC.Data.Entities.Abstract;
@@ -15,6 +14,8 @@ public class DatabaseService
         _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
         _database.DropTableAsync<FolderEntity>();
         _database.DropTableAsync<SongEntity>();
+        _database.DropTableAsync<PlaylistEntity>();
+        _database.DropTableAsync<PlaylistSongEntity>();
     }
 
     public async Task TryCreateTableAsync<TEntity>()
@@ -42,8 +43,13 @@ public class DatabaseService
     {
         try
         {
-            var result = await _database.Table<TEntity>().Where(item => predicate.Invoke(item)).ToListAsync();
-            return result;
+            // TODO: sqlite throws exception if i try to use FirstOrDefault() with external predicate in it
+            // need to find a fix
+            var result = await _database.Table<TEntity>().ToListAsync();
+            return result.Where(predicate).ToList();
+
+            /*var result = await _database.Table<TEntity>().Where(item => predicate.Invoke(item)).ToListAsync();
+            return result;*/
         }
         catch (Exception e)
         {

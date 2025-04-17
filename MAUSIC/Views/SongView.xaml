@@ -3,5 +3,55 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUSIC.Views.SongView">
-    
+
+    <Border Padding="0, 0, 20, 0">
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Source="{Binding CoverImage}"
+                Aspect="AspectFit"
+                VerticalOptions="Fill"
+                HorizontalOptions="Start"
+                Grid.Column="0"/>
+
+            <VerticalStackLayout
+                Margin="8"
+                Spacing="4"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                Grid.Column="1">
+
+                <Label
+                    Text="{Binding Title}"
+                    Style="{StaticResource Headline}"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"/>
+
+                <Label
+                    Text="{Binding Artist}"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"/>
+
+            </VerticalStackLayout>
+
+            <Label
+                Text="{Binding DurationString}"
+                Style="{StaticResource Headline}"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                Grid.Column="2"/>
+
+        </Grid>
+
+
+    </Border>
+
 </ContentView>

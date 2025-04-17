@@ -1,8 +1,8 @@
 namespace MAUSIC.Data.Constants;
 
-public class PlaylistsConstants
+public static class PlaylistsConstants
 {
-    public string AllSongs { get; set; } = "All Songs";
+    public const string AllSongs = "All Songs";
 
-    public string FavoriteSongs { get; set; } = "Favorite Songs";
+    public const string FavoriteSongs  = "Favorite Songs";
 }

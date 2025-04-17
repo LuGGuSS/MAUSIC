@@ -8,8 +8,8 @@ public partial class PlayerPage
 {
     private bool _isDragging;
 
-    public PlayerPage(PlayerPageModel vm)
-        :base(vm)
+    public PlayerPage(PlayerPageModel pageModel)
+        :base(pageModel)
     {
         InitializeComponent();
     }

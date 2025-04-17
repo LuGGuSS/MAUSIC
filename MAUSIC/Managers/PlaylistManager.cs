@@ -1,16 +1,37 @@
+using MAUSIC.Data.Constants;
 using MAUSIC.Data.Entities;
-using MAUSIC.Models;
 using MAUSIC.Services;
 
 namespace MAUSIC.Managers;
 
 public class PlaylistManager
 {
-    public PlaylistService _playlistService;
+    private readonly PlaylistService _playlistService;
+
+    private PlaylistEntity? _allSongsPlaylistEntity;
 
     public PlaylistManager(PlaylistService playlistService)
     {
         _playlistService = playlistService;
+    }
+
+    public async Task<List<PlaylistEntity>> GetAllPlaylists()
+    {
+        var result = await _playlistService.GetAllPlaylists();
+
+        if (result == null || result.Count == 0)
+        {
+            result = await CreateBasePlaylists();
+        }
+
+        return result;
+    }
+
+    public async Task<PlaylistEntity?> GetPlaylistByTitle(string title)
+    {
+        var result = await _playlistService.GetPlaylistByTitle(title);
+
+        return result;
     }
 
     public async Task<PlaylistEntity> CreatePlaylist(string title)
@@ -20,16 +41,46 @@ public class PlaylistManager
         return result;
     }
 
-    public async Task<PlaylistSongEntity> AddSong(PlaylistEntity playlistEntity, SongModel song)
+    public async Task<PlaylistSongEntity> AddSong(PlaylistEntity playlistEntity, SongEntity song)
     {
         var result = await _playlistService.AddSong(playlistEntity, song);
 
         return result;
     }
 
-    public async Task<List<PlaylistSongEntity>> GetPlaylistSongs(PlaylistEntity playlistEntity)
+    public async Task<PlaylistSongEntity> AddSongToAllSongsPlaylist(SongEntity song)
     {
-        var result = await _playlistService.GetPlaylistSongs(playlistEntity);
+        if (_allSongsPlaylistEntity == null)
+        {
+            var playlist = await GetPlaylistByTitle(PlaylistsConstants.AllSongs);
+
+            if (playlist == null)
+            {
+                var playlists = await CreateBasePlaylists();
+                playlist = playlists[0];
+            }
+
+            _allSongsPlaylistEntity = playlist;
+        }
+
+        var result = await AddSong(_allSongsPlaylistEntity, song);
+
+        return result;
+    }
+
+    public async Task<List<PlaylistSongEntity>> GetPlaylistSongs(int playlistId)
+    {
+        var resultPlaylistSongs = await _playlistService.GetPlaylistSongs(playlistId);
+
+        return resultPlaylistSongs;
+    }
+
+    private async Task<List<PlaylistEntity>> CreateBasePlaylists()
+    {
+        var result = new List<PlaylistEntity>();
+
+        result.Add(await CreatePlaylist(PlaylistsConstants.AllSongs));
+        result.Add(await CreatePlaylist(PlaylistsConstants.FavoriteSongs));
 
         return result;
     }

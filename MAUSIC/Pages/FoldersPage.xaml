@@ -8,7 +8,6 @@
     xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
     xmlns:views="clr-namespace:MAUSIC.Views"
     xmlns:selectors="clr-namespace:MAUSIC.Data.TemplateSelectors"
-    xmlns:converters1="clr-namespace:MAUSIC.Converters"
     x:DataType="pageModels:FoldersPageModel"
     x:TypeArguments="pageModels:FoldersPageModel"
     x:Class="MAUSIC.Pages.FoldersPage">
@@ -35,17 +34,17 @@
         <DataTemplate
             x:Key="SongTemplate"
             x:DataType="models:SongModel">
-            <views:QueuedSongView
+            <views:SongView
                 HeightRequest="100">
-                <views:QueuedSongView.GestureRecognizers>
+                <views:SongView.GestureRecognizers>
                     <TapGestureRecognizer
                         Command="{
-                                    Binding SongSelectedCommand,
-                                    Source={RelativeSource AncestorType={x:Type pageModels:FoldersPageModel}},
-                                    x:DataType=pageModels:FoldersPageModel}"
-                                    CommandParameter="{Binding .}"/>
-                </views:QueuedSongView.GestureRecognizers>
-            </views:QueuedSongView>
+                            Binding SongSelectedCommand,
+                            Source={RelativeSource AncestorType={x:Type pageModels:FoldersPageModel}},
+                            x:DataType=pageModels:FoldersPageModel}"
+                            CommandParameter="{Binding .}"/>
+                </views:SongView.GestureRecognizers>
+            </views:SongView>
         </DataTemplate>
 
         <selectors:FolderContentsTemplateSelector x:Key="FolderContentsTemplateSelector"
@@ -53,7 +52,7 @@
                                                   SongTemplate="{StaticResource SongTemplate}" />
 
         <ResourceDictionary xmlns:converters="clr-namespace:MAUSIC.Converters">
-            <converters1:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
+            <converters:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
         </ResourceDictionary>
 
     </ContentPage.Resources>
