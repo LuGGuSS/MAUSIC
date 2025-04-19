@@ -9,4 +9,6 @@ public abstract partial class BasePageModel : ObservableObject
     private async Task Initialize() => await InitializeAsync();
 
     protected abstract Task InitializeAsync();
+
+    public Action<Action<object?>>? ShowPopupAsync { get; set; }
 }

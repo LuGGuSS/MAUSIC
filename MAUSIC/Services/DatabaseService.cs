@@ -12,10 +12,10 @@ public class DatabaseService
     public DatabaseService()
     {
         _database = new SQLiteAsyncConnection(DatabaseConstants.DatabasePath, DatabaseConstants.Flags);
-        _database.DropTableAsync<FolderEntity>();
+        /*_database.DropTableAsync<FolderEntity>();
         _database.DropTableAsync<SongEntity>();
         _database.DropTableAsync<PlaylistEntity>();
-        _database.DropTableAsync<PlaylistSongEntity>();
+        _database.DropTableAsync<PlaylistSongEntity>();*/
     }
 
     public async Task TryCreateTableAsync<TEntity>()
@@ -112,6 +112,21 @@ public class DatabaseService
         {
             Console.WriteLine(e);
             return 0;
+        }
+    }
+
+    public async Task<bool> DeleteItemAsync<TEntity>(TEntity item) where TEntity : BaseEntity, new()
+    {
+        try
+        {
+            await _database.DeleteAsync(item);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
         }
     }
 }

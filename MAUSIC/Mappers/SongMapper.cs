@@ -19,7 +19,8 @@ public static class SongMapper
             Artist = model.Artist,
             Duration = model.Duration,
             Path = model.Path,
-            Title = model.Title
+            Title = model.Title,
+            IsFavorite = model.IsFavorite,
         };
 
         return entity;
@@ -40,6 +41,7 @@ public static class SongMapper
             Duration = entity.Duration,
             Path = entity.Path,
             Title = entity.Title,
+            IsFavorite = entity.IsFavorite,
             CoverImage = TryGetSongCover(entity.Path)
         };
 

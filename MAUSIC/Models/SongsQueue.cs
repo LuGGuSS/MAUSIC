@@ -9,16 +9,42 @@ public class SongsQueue : BaseModel
 
     private SongModel? _currentSong;
 
-    private List<SongModel>? _songs;
+    private List<SongModel> _songs = new();
 
     public Action? OnNewSongPlaying { get; set; }
 
-    public List<SongModel>? Songs
+    public List<SongModel> Songs
     {
         get => _songs;
         set
         {
-            if (SetField(ref _songs, value))
+            if (value == null)
+            {
+                return;
+            }
+
+            var newSongs = new List<SongModel>();
+
+            foreach (var song in value)
+            {
+                var newSong = new SongModel
+                {
+                    Album = song.Album,
+                    Artist = song.Artist,
+                    CoverImage = song.CoverImage,
+                    Duration = song.Duration,
+                    Id = song.Id,
+                    IsPlaying = song.IsPlaying,
+                    OpenPopupFunc = OpenPopupFunc,
+                    Path = song.Path,
+                    Title = song.Title,
+                    IsFavorite = song.IsFavorite,
+                };
+
+                newSongs.Add(newSong);
+            }
+
+            if (SetField(ref _songs, newSongs))
             {
                 CurrentSongIndex = 0;
             }
@@ -59,4 +85,45 @@ public class SongsQueue : BaseModel
             }
         }
     }
+
+    public void AddSong(SongModel song)
+    {
+        var newSong = new SongModel
+        {
+            Album = song.Album,
+            Artist = song.Artist,
+            CoverImage = song.CoverImage,
+            Duration = song.Duration,
+            Id = song.Id,
+            IsPlaying = song.IsPlaying,
+            OpenPopupFunc = OpenPopupFunc,
+            Path = song.Path,
+            Title = song.Title,
+            IsFavorite = song.IsFavorite,
+        };
+
+        var songs = Songs;
+
+        songs.Add(newSong);
+
+        Songs = songs;
+
+        // NotifyCollectionChanged();
+    }
+
+    public void RemoveSong(int songIndex)
+    {
+        var songs = Songs;
+
+        songs.RemoveAt(songIndex);
+
+        Songs = songs;
+    }
+
+    public void NotifyCollectionChanged()
+    {
+        OnPropertyChanged(nameof(Songs));
+    }
+
+    public Func<SongModel,Task> OpenPopupFunc { get; set; }
 }

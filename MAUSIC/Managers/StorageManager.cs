@@ -67,7 +67,7 @@ public class StorageManager
         return result;
     }
 
-    public async Task<IList<BaseModel>> GetFolderContents(FolderModel folderModel)
+    public async Task<IList<BaseModel>> GetFolderContents(FolderModel folderModel, Func<SongModel,Task> openPopupFunc)
     {
         var folders = _storageService.GetInnerFolders(folderModel.Path);
 
@@ -97,6 +97,7 @@ public class StorageManager
 
                 if (model != null)
                 {
+                    model.OpenPopupFunc = openPopupFunc;
                     modelsList.Add(model);
                 }
             }
@@ -105,7 +106,7 @@ public class StorageManager
         return modelsList;
     }
 
-    public async Task PopulateFolderWithChildren(FolderModel parentModel)
+    public async Task PopulateFolderWithChildren(FolderModel parentModel, Func<SongModel,Task> opneePopupFunc)
     {
         var folders = _storageService.GetInnerFolders(parentModel.Path);
 
@@ -134,6 +135,7 @@ public class StorageManager
 
                 if (model != null)
                 {
+                    model.OpenPopupFunc = opneePopupFunc;
                     parentModel.InnerItems.Add(model);
                 }
             }

@@ -48,6 +48,15 @@ public class DatabaseManager
         return result == 1;
     }
 
+    public async Task<bool> DeleteItemAsync<TEntity>(TEntity item) where TEntity : BaseEntity, new()
+    {
+        await _databaseService.TryCreateTableAsync<TEntity>();
+
+        var result = await _databaseService.DeleteItemAsync(item);
+
+        return result;
+    }
+
     public async Task<int> SaveItemsAsync<TEntity>(IEnumerable<TEntity> items) where TEntity : BaseEntity, new()
     {
         await _databaseService.TryCreateTableAsync<TEntity>();

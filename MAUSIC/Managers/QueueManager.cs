@@ -14,6 +14,16 @@ public class QueueManager
 
     public Func<SongsQueue>? GetCurrentSongsQueue { get; set; }
 
+    public void AddSongToQueue(SongsQueue? queue, SongModel? song)
+    {
+        if (queue == null || song == null)
+        {
+            return;
+        }
+
+        _queueService.AddSongToQueue(queue, song);
+    }
+
     public void RemoveSongFromQueue(SongsQueue? queue, SongModel? song)
     {
         if (queue == null || song == null)

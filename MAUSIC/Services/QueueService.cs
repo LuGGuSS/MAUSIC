@@ -4,15 +4,40 @@ namespace MAUSIC.Services;
 
 public class QueueService
 {
-    public void RemoveSongFromQueue(SongsQueue? queue, SongModel? song)
+    public void AddSongToQueue(SongsQueue queue, SongModel song)
     {
-        if (queue?.Songs == null || queue.Songs.Count == 0 || song == null)
+        var model = new SongModel()
+        {
+            Album = song.Album,
+            Artist = song.Artist,
+            Title = song.Title,
+            CoverImage = song.CoverImage,
+            Duration = song.Duration,
+            Id = song.Id,
+            IsPlaying = song.IsPlaying,
+            OpenPopupFunc = queue.OpenPopupFunc,
+            Path = song.Path,
+            IsFavorite = song.IsFavorite
+        };
+
+        queue.AddSong(model);
+    }
+
+    public void RemoveSongFromQueue(SongsQueue queue, SongModel song)
+    {
+        if (queue.Songs.Count == 0)
         {
             return;
         }
 
-        var index = queue.Songs.IndexOf(song);
-        queue.Songs.Remove(song);
+        var index = queue.Songs.FindIndex((songModel) => songModel.Id == song.Id);
+
+        if (index == -1)
+        {
+            return;
+        }
+
+        queue.RemoveSong(index);
 
         if (queue.CurrentSongIndex > index)
         {
@@ -35,6 +60,7 @@ public class QueueService
         var song = queue.Songs[previousIndex];
         queue.Songs.RemoveAt(previousIndex);
         queue.Songs.Insert(newIndex, song);
+        queue.NotifyCollectionChanged();
 
         if (queue.CurrentSongIndex > newIndex && queue.CurrentSongIndex < previousIndex)
         {

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Maui.Views;
 using MAUSIC.PageModels;
+using MAUSIC.Views;
 
 namespace MAUSIC.Pages;
 

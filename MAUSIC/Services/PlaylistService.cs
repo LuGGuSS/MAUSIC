@@ -69,6 +69,27 @@ public class PlaylistService
         return playlistSongEntity;
     }
 
+    public async Task<bool> RemoveSong(PlaylistSongEntity playlistSongEntity)
+    {
+        var result = await _databaseManager.DeleteItemAsync(playlistSongEntity);
+
+        return result;
+    }
+
+    public async Task<bool> ToggleFavourite(PlaylistEntity playlistEntity, SongEntity song)
+    {
+        var playlistSong = await _databaseManager.GetItemAsync<PlaylistSongEntity>((entity) => entity.SongId == song.Id);
+
+        if (playlistSong != null)
+        {
+            await _databaseManager.DeleteItemAsync(playlistSong);
+            return false;
+        }
+
+        await _databaseManager.SaveItemAsync(playlistEntity);
+        return true;
+    }
+
     public async Task<List<PlaylistSongEntity>> GetPlaylistSongs(int playlistId)
     {
         var allSongs = await _databaseManager

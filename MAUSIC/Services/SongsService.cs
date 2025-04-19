@@ -16,7 +16,7 @@ public class SongsService
         _databaseManager = databaseManager;
     }
 
-    public async Task TrySaveSongs(IList<string> files)
+    /*public async Task TrySaveSongs(IList<string> files)
     {
         var songsEntities = new List<SongEntity>();
 
@@ -91,7 +91,7 @@ public class SongsService
         await Task.WhenAll(initSongEntityTasks);
 
         return songModels;
-    }
+    }*/
 
     public async Task<SongEntity?> GetSongEntityFromPath(string path)
     {
@@ -103,6 +103,13 @@ public class SongsService
     public async Task<SongEntity?> GetSongEntityFromId(int id)
     {
         var result = await _databaseManager.GetItemAsync<SongEntity>((entity) => entity.Id == id);
+
+        return result;
+    }
+
+    public async Task<bool> SaveSong(SongEntity song)
+    {
+        var result = await _databaseManager.SaveItemAsync(song);
 
         return result;
     }

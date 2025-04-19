@@ -68,31 +68,6 @@ public partial class PlayerPageModel : BasePageModel
         UpdateStringRepresentation();
     }
 
-    private async Task InitialLoadSongs()
-    {
-        var folders = await _databaseManager.GetAllItems<FolderEntity>();
-
-        if (folders == null || folders.Count == 0)
-        {
-            Title = "Song";
-            Artist = "Artist";
-            Album = "Album";
-            UpdateStringRepresentation();
-
-            return;
-        }
-
-        List<string> files = new List<string>();
-
-        foreach (var folder in folders)
-        {
-            var resultFiles = await _storageManager.GetMusicFiles(folder.Path);
-            files.AddRange(resultFiles);
-        }
-
-        await _songsManager.LoadSongsFromFilesAsync(files);
-    }
-
     [RelayCommand]
     private void EnqueueNextSong()
     {

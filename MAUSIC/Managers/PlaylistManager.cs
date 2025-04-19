@@ -43,7 +43,39 @@ public class PlaylistManager
 
     public async Task<PlaylistSongEntity> AddSong(PlaylistEntity playlistEntity, SongEntity song)
     {
+        var playlistSongEntities = await GetPlaylistSongs(playlistEntity.Id);
+
+        var playlistSongEntity = playlistSongEntities.FirstOrDefault((playlistSong) => playlistSong.SongId == song.Id);
+
+        if (playlistSongEntity != null)
+        {
+            return playlistSongEntity;
+        }
+
         var result = await _playlistService.AddSong(playlistEntity, song);
+
+        return result;
+    }
+
+    public async Task<bool> RemoveSong(PlaylistEntity playlistEntity, SongEntity song)
+    {
+        var playlistSongEntities = await GetPlaylistSongs(playlistEntity.Id);
+
+        var playlistSongEntity = playlistSongEntities.FirstOrDefault((playlistSong) => playlistSong.SongId == song.Id);
+
+        if (playlistSongEntity == null)
+        {
+            return false;
+        }
+
+        var result = await _playlistService.RemoveSong(playlistSongEntity);
+
+        return result;
+    }
+
+    public async Task<bool> ToggleFavourite(PlaylistEntity playlistEntity, SongEntity song)
+    {
+        var result = await _playlistService.ToggleFavourite(playlistEntity, song);
 
         return result;
     }
@@ -81,6 +113,7 @@ public class PlaylistManager
 
         result.Add(await CreatePlaylist(PlaylistsConstants.AllSongs));
         result.Add(await CreatePlaylist(PlaylistsConstants.FavoriteSongs));
+        result.Add(await CreatePlaylist(PlaylistsConstants.TestPlaylist));
 
         return result;
     }

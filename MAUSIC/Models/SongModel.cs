@@ -7,6 +7,7 @@ namespace MAUSIC.Models;
 public class SongModel : BaseModel
 {
     private bool _isPlaying;
+    private bool _isFavorite;
 
     public int Id { get; set; }
 
@@ -28,5 +29,20 @@ public class SongModel : BaseModel
     {
         get => _isPlaying;
         set => SetField(ref _isPlaying, value);
+    }
+
+    public bool IsFavorite
+    {
+        get => _isFavorite;
+        set => SetField(ref _isFavorite, value);
+    }
+
+    public Func<SongModel, Task> OpenPopupFunc { get; set; }
+
+    public async Task OpenMoreAsync()
+    {
+        var task = OpenPopupFunc(this);
+
+        await task.ConfigureAwait(false);
     }
 }

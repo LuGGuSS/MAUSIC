@@ -13,4 +13,6 @@ public class SongEntity : BaseEntity
     public TimeSpan Duration { get; set; }
 
     public string Path { get; set; }
+
+    public bool IsFavorite { get; set; }
 }
