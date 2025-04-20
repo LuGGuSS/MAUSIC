@@ -16,6 +16,14 @@
                 TrueObject="{StaticResource Playing}"
                 FalseObject="{StaticResource Default}"/>
 
+            <Color x:Key="Recommended">MidnightBlue</Color>
+            <Color x:Key="NotRecommended">#1f1f1f</Color>
+
+            <toolkit:BoolToObjectConverter
+                x:Key="IsRecommendedConverter"
+                TrueObject="{StaticResource Recommended}"
+                FalseObject="{StaticResource NotRecommended}"/>
+
         </ResourceDictionary>
     </ContentView.Resources>
 
@@ -23,7 +31,8 @@
         Padding="0, 0, 20, 0"
         Stroke="{Binding IsPlaying, Converter={StaticResource IsPlayingConverter}}" >
 
-        <Grid>
+        <Grid
+            BackgroundColor="{Binding IsRecommended, Converter={StaticResource IsRecommendedConverter}}">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MAUSIC.Data.Constants;
@@ -82,7 +83,7 @@ public partial class PlaylistsPageModel : BasePageModel
     [RelayCommand]
     private async Task OnSongSelected(SongModel songModel)
     {
-        var songs = new List<SongModel>();
+        var songs = new ObservableCollection<SongModel>();
 
         foreach (var item in Items)
         {

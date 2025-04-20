@@ -17,16 +17,18 @@ public class StorageManager
     private readonly StorageService _storageService;
     private readonly DatabaseManager _databaseManager;
     private readonly SongsManager _songsManager;
-    private readonly PlaylistManager _playlistManager;
+    private readonly RecommendationManager _recommendationManager;
 
     public StorageManager(
         StorageService storageService,
         DatabaseManager databaseManager,
-        SongsManager songsManager)
+        SongsManager songsManager,
+        RecommendationManager recommendationManager)
     {
         _storageService = storageService;
         _databaseManager = databaseManager;
         _songsManager = songsManager;
+        _recommendationManager = recommendationManager;
     }
 
     public async Task<List<string>?> PickFolder()
@@ -151,10 +153,16 @@ public class StorageManager
 
     private async Task SaveSongsToDatabase(List<string> songPaths)
     {
+        var songs = new List<SongEntity>();
+
         foreach (var songPath in songPaths)
         {
             // NOTE: this call creates db model on
-            await _songsManager.GetSongFromPath(songPath);
+            var song = await _songsManager.GetSongFromPath(songPath);
+
+            songs.Add(song);
         }
+
+        await _recommendationManager.TryCreateRecommendationPairs(songs);
     }
 }

@@ -124,10 +124,19 @@ public class SongsService
             Artist = tagsFile.Tag.FirstPerformer,
             Album = tagsFile.Tag.Album,
             Duration = tagsFile.Properties.Duration,
-            Path = path
+            Path = path,
+            BPM = tagsFile.Tag.BeatsPerMinute,
+            Genres = tagsFile.Tag.JoinedGenres,
+            Performers = tagsFile.Tag.JoinedPerformers,
         };
 
         return song;
     }
 
+    public async Task<List<SongEntity>> GetAllSongs()
+    {
+        var songEntities = await _databaseManager.GetAllItems<SongEntity>();
+
+        return songEntities ?? new List<SongEntity>();
+    }
 }

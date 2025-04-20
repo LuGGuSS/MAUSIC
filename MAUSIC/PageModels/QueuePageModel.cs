@@ -13,17 +13,20 @@ public partial class QueuePageModel : BasePageModel
     private readonly SongsManager _songsManager;
     private readonly PlaylistManager _playlistManager;
     private readonly QueueManager _queueManager;
+    private readonly RecommendationManager _recommendationManager;
 
     [ObservableProperty] private SongsQueue _queue;
 
     public QueuePageModel(
         SongsManager songsManager,
         PlaylistManager playlistManager,
-        QueueManager queueManager)
+        QueueManager queueManager,
+        RecommendationManager recommendationManager)
     {
         _songsManager = songsManager;
         _playlistManager = playlistManager;
         _queueManager = queueManager;
+        _recommendationManager = recommendationManager;
     }
 
     protected override Task InitializeAsync()

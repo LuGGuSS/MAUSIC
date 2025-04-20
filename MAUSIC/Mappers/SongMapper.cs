@@ -21,6 +21,9 @@ public static class SongMapper
             Path = model.Path,
             Title = model.Title,
             IsFavorite = model.IsFavorite,
+            BPM = model.BPM,
+            Genres = model.Genres,
+            Performers = model.Performers,
         };
 
         return entity;
@@ -42,7 +45,10 @@ public static class SongMapper
             Path = entity.Path,
             Title = entity.Title,
             IsFavorite = entity.IsFavorite,
-            CoverImage = TryGetSongCover(entity.Path)
+            CoverImage = TryGetSongCover(entity.Path),
+            BPM = entity.BPM,
+            Genres = entity.Genres,
+            Performers = entity.Performers
         };
 
         return model;

@@ -6,21 +6,7 @@ public class QueueService
 {
     public void AddSongToQueue(SongsQueue queue, SongModel song)
     {
-        var model = new SongModel()
-        {
-            Album = song.Album,
-            Artist = song.Artist,
-            Title = song.Title,
-            CoverImage = song.CoverImage,
-            Duration = song.Duration,
-            Id = song.Id,
-            IsPlaying = song.IsPlaying,
-            OpenPopupFunc = queue.OpenPopupFunc,
-            Path = song.Path,
-            IsFavorite = song.IsFavorite
-        };
-
-        queue.AddSong(model);
+        queue.AddSong(song);
     }
 
     public void RemoveSongFromQueue(SongsQueue queue, SongModel song)
@@ -30,12 +16,14 @@ public class QueueService
             return;
         }
 
-        var index = queue.Songs.FindIndex((songModel) => songModel.Id == song.Id);
+        var model = queue.Songs.FirstOrDefault((songModel) => songModel.Id == song.Id);
 
-        if (index == -1)
+        if (model == null)
         {
             return;
         }
+
+        var index = queue.Songs.IndexOf(model);
 
         queue.RemoveSong(index);
 
@@ -58,9 +46,8 @@ public class QueueService
         }
 
         var song = queue.Songs[previousIndex];
-        queue.Songs.RemoveAt(previousIndex);
-        queue.Songs.Insert(newIndex, song);
-        queue.NotifyCollectionChanged();
+        queue.RemoveSong(previousIndex);
+        queue.InsertSong(newIndex, song);
 
         if (queue.CurrentSongIndex > newIndex && queue.CurrentSongIndex < previousIndex)
         {

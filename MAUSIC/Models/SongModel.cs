@@ -8,6 +8,7 @@ public class SongModel : BaseModel
 {
     private bool _isPlaying;
     private bool _isFavorite;
+    private bool _isRecommended;
 
     public int Id { get; set; }
 
@@ -36,6 +37,18 @@ public class SongModel : BaseModel
         get => _isFavorite;
         set => SetField(ref _isFavorite, value);
     }
+
+    public bool IsRecommended
+    {
+        get => _isRecommended;
+        set => SetField(ref _isRecommended, value);
+    }
+
+    public string Genres { get; set; }
+
+    public string Performers { get; set; }
+
+    public uint BPM { get; set; }
 
     public Func<SongModel, Task> OpenPopupFunc { get; set; }
 

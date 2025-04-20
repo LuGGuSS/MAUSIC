@@ -49,4 +49,11 @@ public class SongsManager
 
         return result;
     }
+
+    public async Task<List<SongEntity>> GetAllSongs()
+    {
+        var result = await _songsService.GetAllSongs();
+
+        return result;
+    }
 }

@@ -15,4 +15,10 @@ public class SongEntity : BaseEntity
     public string Path { get; set; }
 
     public bool IsFavorite { get; set; }
+
+    public string Genres { get; set; }
+
+    public string Performers { get; set; }
+
+    public uint BPM { get; set; }
 }

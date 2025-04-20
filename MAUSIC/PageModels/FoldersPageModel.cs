@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MAUSIC.Data.Constants;
@@ -95,7 +96,7 @@ public partial class FoldersPageModel : BasePageModel
     [RelayCommand]
     public async Task SongSelected(SongModel model)
     {
-        var songs = SelectedFolderModel.InnerItems.OfType<SongModel>().ToList();
+        var songs = SelectedFolderModel.InnerItems.OfType<SongModel>().ToObservableCollection();
 
         var queue = _queueManager.GetCurrentSongsQueue?.Invoke();
 

@@ -1,19 +1,21 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 using MAUSIC.Models.Abstract;
 
 namespace MAUSIC.Models;
 
-public class SongsQueue : BaseModel
+public class SongsQueue : BaseModel, INotifyCollectionChanged
 {
     private int _currentSongIndex = -1;
 
     private SongModel? _currentSong;
 
-    private List<SongModel> _songs = new();
+    private ObservableCollection<SongModel> _songs = new();
 
     public Action? OnNewSongPlaying { get; set; }
 
-    public List<SongModel> Songs
+    public ObservableCollection<SongModel> Songs
     {
         get => _songs;
         set
@@ -23,7 +25,7 @@ public class SongsQueue : BaseModel
                 return;
             }
 
-            var newSongs = new List<SongModel>();
+            var newSongs = new ObservableCollection<SongModel>();
 
             foreach (var song in value)
             {
@@ -100,30 +102,30 @@ public class SongsQueue : BaseModel
             Path = song.Path,
             Title = song.Title,
             IsFavorite = song.IsFavorite,
+            IsRecommended = song.IsRecommended
         };
 
-        var songs = Songs;
-
-        songs.Add(newSong);
-
-        Songs = songs;
+        Songs.Add(newSong);
 
         // NotifyCollectionChanged();
     }
 
     public void RemoveSong(int songIndex)
     {
-        var songs = Songs;
-
-        songs.RemoveAt(songIndex);
-
-        Songs = songs;
+        Songs.RemoveAt(songIndex);
     }
 
-    public void NotifyCollectionChanged()
+    public void InsertSong(int index, SongModel song)
     {
-        OnPropertyChanged(nameof(Songs));
+        Songs.Insert(index, song);
+    }
+
+    protected virtual void OnCollectionChanged(NotifyCollectionChangedAction action)
+    {
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
     }
 
     public Func<SongModel,Task> OpenPopupFunc { get; set; }
+
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
 }
