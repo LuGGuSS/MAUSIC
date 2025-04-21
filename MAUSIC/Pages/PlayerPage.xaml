@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<abstract:BasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:abstract="clr-namespace:MAUSIC.Pages.Abstract"
+    xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
+    xmlns:converters="clr-namespace:MAUSIC.Converters"
+    x:Class="MAUSIC.Pages.PlayerPage"
+    x:TypeArguments="pageModels:PlayerPageModel"
+    x:DataType="pageModels:PlayerPageModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToImageSourceConverter x:Key="IsOnRepeatConverter"
+                                                TrueSource="repeat_on.png"
+                                                FalseSource="repeat.png"/>
+
+            <converters:BoolToImageSourceConverter x:Key="IsShuffledConverter"
+                                                TrueSource="shuffle_on.png"
+                                                FalseSource="shuffle.png"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <VerticalStackLayout
+            Grid.Column="0"
+            Margin="16"
+            Spacing="16"
+            HorizontalOptions="Fill"
+            VerticalOptions="Center">
+
+            <Image
+                Source="{Binding Cover}"
+                HeightRequest="250"
+                Aspect="AspectFit"/>
+
+            <Label
+                Text="{Binding Title}"
+                Style="{StaticResource Headline}"/>
+
+            <Label
+                Text="{Binding Artist}"
+                Style="{StaticResource SubHeadline}"/>
+
+            <Label
+                Text="{Binding Album}"
+                Style="{StaticResource SubHeadline}"/>
+
+            <Slider
+                x:Name="Slider"
+                HorizontalOptions="Fill"
+                Maximum="{Binding DurationTimeSliderValue}"
+                Value="{Binding CurrentTimeSliderValue}"
+                ValueChanged="OnSliderValueChanged"
+                DragStarted="OnDragStarted"
+                DragCompleted="OnDragCompleted"/>
+
+            <Grid
+                HorizontalOptions="Fill">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    HorizontalOptions="Start"
+                    Grid.Column="0"
+                    Text="{Binding CurrentTimeStringRepresentation}"
+                    Style="{StaticResource SubHeadline}"/>
+
+
+                <Label
+                    HorizontalOptions="End"
+                    Grid.Column="1"
+                    Text="{Binding DurationStringRepresentation}"
+                    Style="{StaticResource SubHeadline}"/>
+
+            </Grid>
+
+            <Grid
+                HorizontalOptions="Center"
+                ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="{Binding IsOnRepeat, Converter={StaticResource IsOnRepeatConverter}}"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnRepeatButtonClicked"/>
+
+                <Button
+                    Grid.Column="1"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="skip_previous_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnSkipPreviousButtonClicked"/>
+
+                <Button
+                    Grid.Column="2"
+                    x:Name="PlayButton"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="play_arrow_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnPlayButtonClicked"/>
+
+                <Button
+                    Grid.Column="3"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="skip_next_24dp.png"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnSkipNextButtonClicked"/>
+
+                <Button
+                    Grid.Column="4"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="{Binding IsShuffled, Converter={StaticResource IsShuffledConverter}}"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnShuffleButtonClicked"/>
+
+            </Grid>
+
+        </VerticalStackLayout>
+
+        <toolkit:MediaElement
+            Grid.Column="0"
+            x:Name="MusicPlayer"
+            IsVisible="false"
+            Source="{Binding CurrentSongPath}"
+            MetadataTitle="{Binding Title}"
+            MetadataArtist="{Binding Artist}"
+            StateChanged="OnMediaPlayerStateChanged"
+            PositionChanged="OnPlayerPositionChanged"
+            MediaEnded="OnMediaEnded"/>
+    </Grid>
+
+</abstract:BasePage>

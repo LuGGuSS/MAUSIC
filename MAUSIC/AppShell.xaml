@@ -4,12 +4,31 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MAUSIC"
-    Shell.FlyoutBehavior="Flyout"
-    Title="MAUSIC">
+    xmlns:pages="clr-namespace:MAUSIC.Pages"
+    NavBarIsVisible="False">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar
+        x:Name="TabBar">
+        <ShellContent
+            Title="Playlists"
+            ContentTemplate="{DataTemplate pages:PlaylistsPage}"
+            Route="PlaylistsPage"
+            Icon="playlist_play_456dp.png"/>
+        <ShellContent
+            Title="Player"
+            ContentTemplate="{DataTemplate pages:PlayerPage}"
+            Route="PlayerPage"
+            Icon="play_arrow_24dp.png"/>
+        <ShellContent
+            Title="Queue"
+            ContentTemplate="{DataTemplate pages:QueuePage}"
+            Route="QueuePage"
+            Icon="queue_music_456dp.png"/>
+        <ShellContent
+            Title="Folders"
+            ContentTemplate="{DataTemplate pages:FoldersPage}"
+            Route="FoldersPage"
+            Icon="folder.png"></ShellContent>
+    </TabBar>
 
 </Shell>

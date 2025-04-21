@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUSIC.Views.PlaylistSelectionOptionView">
+
+    <Button
+        x:Name="Button"
+        Margin="5"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill"
+        Clicked="OnClick"/>
+
+</ContentView>

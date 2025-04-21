@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<abstract:BasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:abstract="clr-namespace:MAUSIC.Pages.Abstract"
+    xmlns:models="clr-namespace:MAUSIC.Models"
+    xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
+    xmlns:views="clr-namespace:MAUSIC.Views"
+    x:DataType="pageModels:QueuePageModel"
+    x:TypeArguments="pageModels:QueuePageModel"
+    x:Class="MAUSIC.Pages.QueuePage">
+
+    <ContentPage.Content>
+
+        <CollectionView
+            x:Name="ContentsCollectionView"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            ItemsSource="{Binding Queue.Songs}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SongModel">
+                    <views:QueuedSongView
+                        HeightRequest="100">
+                        <views:QueuedSongView.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{
+                                    Binding QueueSongSelectedCommand,
+                                    Source={RelativeSource AncestorType={x:Type pageModels:QueuePageModel}},
+                                    x:DataType=pageModels:QueuePageModel}"
+                                CommandParameter="{Binding .}"/>
+                        </views:QueuedSongView.GestureRecognizers>
+                    </views:QueuedSongView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.Header>
+                <Grid HeightRequest="200"
+                      WidthRequest="200"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill">
+                    <Image Source="queue_music_456dp.png"
+                           Aspect="AspectFit"
+                           Height="200"
+                           Width="200"/>
+                </Grid>
+            </CollectionView.Header>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Spacing="16">
+
+                    <Label
+                        MaxLines="2"
+                        Text="Queue is empty."
+                        Style="{StaticResource Headline}"/>
+
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+        </CollectionView>
+
+    </ContentPage.Content>
+</abstract:BasePage>

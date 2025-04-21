@@ -1,4 +1,7 @@
-﻿namespace MAUSIC;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+
+namespace MAUSIC;
 
 public partial class App : Application
 {
@@ -9,6 +12,10 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new AppShell());
+		return new Window(new AppShell())
+		{
+			MinimumWidth = 1000,
+			MinimumHeight = 800
+		};
 	}
 }
