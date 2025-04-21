@@ -17,6 +17,27 @@ public class RecommendationManager
         _songsManager = songsManager;
     }
 
+    public async Task ChangeRecommendationWeight(List<SongEntity> queue, SongEntity songEntity, float wightChange)
+    {
+        var existingPairs = await _recommendationService.GetAllRecommendationPairs();
+
+        foreach (var queuedSong in queue)
+        {
+            var pairs = existingPairs
+                .Where((pair) =>
+                    (pair.FirstSongId == songEntity.Id && pair.SecondSongId == queuedSong.Id)
+                    || (pair.FirstSongId == queuedSong.Id && pair.SecondSongId == songEntity.Id))
+                .ToList();
+
+            foreach (var pair in pairs)
+            {
+                pair.UserWeight += wightChange;
+            }
+
+            await _recommendationService.UpdateRecommendationPairs(pairs);
+        }
+    }
+
     public async Task<List<SongEntity>> GetRecommendation(List<SongEntity> queue, int count)
     {
         var existingPairs = await _recommendationService.GetAllRecommendationPairs();

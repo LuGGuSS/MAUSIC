@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core.Primitives;
+using MAUSIC.Data.Constants;
 using PlayerPageModel = MAUSIC.PageModels.PlayerPageModel;
 
 namespace MAUSIC.Pages;
@@ -149,5 +150,20 @@ public partial class PlayerPage
             MusicPlayer.CurrentState == MediaElementState.Playing
                 ? "pause_24dp.png"
                 : "play_arrow_24dp.png");
+    }
+
+    private void OnDislikeClicked(object? sender, EventArgs e)
+    {
+        PageModel.ChangeRecommendationWeightCommand.ExecuteAsync(RecommendationConstants.UserDisliked);
+    }
+
+    private void OnLikeClicked(object? sender, EventArgs e)
+    {
+        PageModel.ChangeRecommendationWeightCommand.ExecuteAsync(RecommendationConstants.UserLiked);
+    }
+
+    private void OnFavouriteClicked(object? sender, EventArgs e)
+    {
+        PageModel.ToggleFavouriteCommand.ExecuteAsync(null);
     }
 }

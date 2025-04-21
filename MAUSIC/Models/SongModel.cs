@@ -7,7 +7,7 @@ namespace MAUSIC.Models;
 public class SongModel : BaseModel
 {
     private bool _isPlaying;
-    private bool _isFavorite;
+    private bool _isFavourite;
     private bool _isRecommended;
 
     public int Id { get; set; }
@@ -32,10 +32,10 @@ public class SongModel : BaseModel
         set => SetField(ref _isPlaying, value);
     }
 
-    public bool IsFavorite
+    public bool IsFavourite
     {
-        get => _isFavorite;
-        set => SetField(ref _isFavorite, value);
+        get => _isFavourite;
+        set => SetField(ref _isFavourite, value);
     }
 
     public bool IsRecommended
