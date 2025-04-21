@@ -21,4 +21,16 @@ public partial class PlaylistsPage
 ContentsCollectionView.Header = null;
 #endif
     }
+
+    private async void CreatePlaylistTapped(object? sender, TappedEventArgs e)
+    {
+        var popup = new InputPopup();
+
+        var result = await this.ShowPopupAsync(popup);
+
+        if (result is string playlistName && playlistName != string.Empty)
+        {
+            await PageModel.CreatePlaylistCommand.ExecuteAsync(playlistName);
+        }
+    }
 }

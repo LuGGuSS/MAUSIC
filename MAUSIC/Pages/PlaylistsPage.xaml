@@ -63,7 +63,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="{Binding ShouldShowFooter, Converter={StaticResource BoolToGridLengthConverter}}" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
 
@@ -90,18 +90,37 @@
 
             </CollectionView>
 
-            <Border
-                Grid.Row="1"
-                HeightRequest="50"
-                IsVisible="{Binding ShouldShowFooter}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
-                </Border.GestureRecognizers>
-                <Label Text="Navigate back"
-                       Style="{StaticResource Headline}"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"/>
-            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="{Binding ShouldShowFooter, Converter={StaticResource BoolToGridLengthConverter}}" />
+                </Grid.RowDefinitions>
+
+                <Border
+                    Grid.Row="0"
+                    HeightRequest="50">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="CreatePlaylistTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="Create playlist"
+                           Style="{StaticResource Headline}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+
+                <Border
+                    Grid.Row="1"
+                    HeightRequest="50"
+                    IsVisible="{Binding ShouldShowFooter}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateBackCommand}"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="Navigate back"
+                           Style="{StaticResource Headline}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+            </Grid>
 
         </Grid>
 

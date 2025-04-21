@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,6 +27,10 @@ public partial class PlayerPageModel : BasePageModel
     [ObservableProperty] private string _artist;
 
     [ObservableProperty] private string _album;
+
+    [ObservableProperty] private bool _isOnRepeat;
+
+    [ObservableProperty] private bool _isShuffled;
 
     [ObservableProperty] private ImageSource _cover = ImageSource.FromFile("album_100dp.png");
 
@@ -94,7 +101,21 @@ public partial class PlayerPageModel : BasePageModel
 
         UpdateStringRepresentation();
 
-        if (Queue.Songs.Count - Queue.CurrentSongIndex <= RecommendationConstants.RecommendationThreshold)
+        await GetRecommendations();
+    }
+
+    private void UpdateStringRepresentation()
+    {
+        CurrentTimeStringRepresentation = TimeSpan.Zero.ToString(@"mm\:ss");
+
+        DurationStringRepresentation = Duration.ToString(@"mm\:ss");
+    }
+
+    private async Task GetRecommendations()
+    {
+        if (Queue.Songs.Count > 0
+            && Queue.Songs.Count - Queue.CurrentSongIndex <= RecommendationConstants.RecommendationThreshold
+            && !IsOnRepeat)
         {
             var recommendations = await _recommendationManager.GetRecommendation(
                 new List<SongEntity>(Queue.Songs
@@ -117,10 +138,13 @@ public partial class PlayerPageModel : BasePageModel
         }
     }
 
-    private void UpdateStringRepresentation()
+    async partial void OnIsOnRepeatChanged(bool value)
     {
-        CurrentTimeStringRepresentation = TimeSpan.Zero.ToString(@"mm\:ss");
+        await GetRecommendations();
+    }
 
-        DurationStringRepresentation = Duration.ToString(@"mm\:ss");
+    partial void OnIsShuffledChanged(bool value)
+    {
+        Queue.ToggleShuffle(value);
     }
 }

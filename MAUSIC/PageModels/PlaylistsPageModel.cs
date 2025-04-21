@@ -1,12 +1,15 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MAUSIC.Data.Constants;
+using MAUSIC.Data.Entities;
 using MAUSIC.Managers;
 using MAUSIC.Mappers;
 using MAUSIC.Models;
 using MAUSIC.Models.Abstract;
 using MAUSIC.PageModels.Abstract;
+using MAUSIC.Views;
 
 namespace MAUSIC.PageModels;
 
@@ -16,7 +19,7 @@ public partial class PlaylistsPageModel : BasePageModel
     private readonly SongsManager _songsManager;
     private readonly QueueManager _queueManager;
 
-    private List<BaseModel> _playlists = new();
+    private ObservableCollection<BaseModel> _playlists = new();
 
     public PlaylistsPageModel(
         PlaylistManager playlistManager,
@@ -28,7 +31,7 @@ public partial class PlaylistsPageModel : BasePageModel
         _queueManager = queueManager;
     }
 
-    [ObservableProperty] private List<BaseModel> _items = new();
+    [ObservableProperty] private ObservableCollection<BaseModel> _items = new();
 
     [ObservableProperty] private bool _shouldShowFooter;
 
@@ -52,30 +55,27 @@ public partial class PlaylistsPageModel : BasePageModel
     [RelayCommand]
     private async Task OnPlaylistSelected(PlaylistModel playlistModel)
     {
-        /*if (playlistModel.Songs.Count == 0)
-        {*/
-            var playlistSongEntities = await _playlistManager.GetPlaylistSongs(playlistModel.Id);
+        var playlistSongEntities = await _playlistManager.GetPlaylistSongs(playlistModel.Id);
 
-            var playlistSongModels = new List<BaseModel>();
+        var playlistSongModels = new List<BaseModel>();
 
-            foreach (var playlistSongEntity in playlistSongEntities)
+        foreach (var playlistSongEntity in playlistSongEntities)
+        {
+            var entity = await _songsManager.GetSongFromId(playlistSongEntity.SongId);
+
+            var model = entity.Map();
+
+            if (model != null)
             {
-                var entity = await _songsManager.GetSongFromId(playlistSongEntity.SongId);
+                model.OpenPopupFunc = GetPopupTask;
 
-                var model = entity.Map();
-
-                if (model != null)
-                {
-                    model.OpenPopupFunc = GetPopupTask;
-
-                    playlistSongModels.Add(model);
-                }
+                playlistSongModels.Add(model);
             }
+        }
 
-            playlistModel.Songs = playlistSongModels;
-        //}
+        playlistModel.Songs = playlistSongModels;
 
-        Items = playlistModel.Songs;
+        Items = playlistModel.Songs.ToObservableCollection();
 
         ShouldShowFooter = true;
     }
@@ -119,9 +119,31 @@ public partial class PlaylistsPageModel : BasePageModel
         ShouldShowFooter = false;
     }
 
+    [RelayCommand]
+    private async Task CreatePlaylist(string playlistName)
+    {
+        var result = await _playlistManager.CreatePlaylist(playlistName);
+
+        var model = result.Map();
+
+        if (model == null)
+        {
+            return;
+        }
+
+        if (ShouldShowFooter)
+        {
+            _playlists.Add(model);
+        }
+        else
+        {
+            Items.Add(model);
+        }
+    }
+
     private Task GetPopupTask(SongModel model)
     {
-        return Task.Run(async void () =>
+        return Task.Run(() =>
         {
             try
             {
@@ -130,13 +152,50 @@ public partial class PlaylistsPageModel : BasePageModel
                     return;
                 }
 
-                ShowPopupAsync.Invoke((o) => HandlePopup(o, model.Id));
+                var models = new List<MoreOptionModel>
+                {
+                    new() { Title = MoreMenuConstants.AddToPlaylist, ResultItem = MoreMenuConstants.AddToPlaylist},
+                    new() { Title = MoreMenuConstants.RemoveFromPlaylist, ResultItem = MoreMenuConstants.RemoveFromPlaylist},
+                    new() { Title = MoreMenuConstants.Favourite,  ResultItem = MoreMenuConstants.Favourite},
+                    new() { Title = MoreMenuConstants.AddToQueue, ResultItem = MoreMenuConstants.AddToQueue},
+                    new() { Title = MoreMenuConstants.RemoveFromQueue, ResultItem = MoreMenuConstants.RemoveFromQueue},
+                };
+
+                ShowPopupAsync.Invoke(new MoreView( models, (o) => HandlePopup(o, model.Id)));
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
         });
+    }
+
+    private async void AddToPlaylistCallback(object? playlistId, SongEntity song)
+    {
+        if (playlistId is not int id)
+        {
+            return;
+        }
+
+        var addToTestPlaylistEntity = await _playlistManager.GetPlaylistById(id);
+        if (addToTestPlaylistEntity != null)
+        {
+            await _playlistManager.AddSong(addToTestPlaylistEntity, song);
+        }
+    }
+
+    private async void RemoveFromPlaylistCallback(object? playlistId, SongEntity song)
+    {
+        if (playlistId is not int id)
+        {
+            return;
+        }
+
+        var addToTestPlaylistEntity = await _playlistManager.GetPlaylistById(id);
+        if (addToTestPlaylistEntity != null)
+        {
+            await _playlistManager.RemoveSong(addToTestPlaylistEntity, song);
+        }
     }
 
     private async void HandlePopup(object? result, int songId)
@@ -157,21 +216,29 @@ public partial class PlaylistsPageModel : BasePageModel
             return;
         }
 
+        var allPlaylists = await _playlistManager.GetAllPlaylists();
+        allPlaylists.RemoveRange(0, 2);
+
+        var playlistOptionModels = allPlaylists
+            .Select((playlist) =>
+                new MoreOptionModel()
+                {
+                    Title = playlist.Title,
+                    ResultItem = playlist.Id
+                }).ToList();
+
         switch (selectedOption)
         {
             case MoreMenuConstants.AddToPlaylist:
-                var addToTestPlaylistEntity = await _playlistManager.GetPlaylistByTitle(PlaylistsConstants.TestPlaylist);
-                if (addToTestPlaylistEntity != null)
-                {
-                    await _playlistManager.AddSong(addToTestPlaylistEntity, song);
-                }
+                ShowPopupAsync?.Invoke(new MoreView(
+                    playlistOptionModels,
+                    (playlistId) => AddToPlaylistCallback(playlistId, song)));
+
                 break;
             case MoreMenuConstants.RemoveFromPlaylist:
-                var removeFromTestPlaylistEntity = await _playlistManager.GetPlaylistByTitle(PlaylistsConstants.TestPlaylist);
-                if (removeFromTestPlaylistEntity != null)
-                {
-                    await _playlistManager.RemoveSong(removeFromTestPlaylistEntity, song);
-                }
+                ShowPopupAsync?.Invoke(new MoreView(
+                    playlistOptionModels,
+                    (playlistId) => RemoveFromPlaylistCallback(playlistId, song)));
                 break;
             case MoreMenuConstants.Favourite:
                 var favouritePlaylist = await _playlistManager.GetPlaylistByTitle(PlaylistsConstants.FavoriteSongs);

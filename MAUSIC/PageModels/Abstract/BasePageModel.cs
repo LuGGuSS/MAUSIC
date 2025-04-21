@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -10,5 +11,5 @@ public abstract partial class BasePageModel : ObservableObject
 
     protected abstract Task InitializeAsync();
 
-    public Action<Action<object?>>? ShowPopupAsync { get; set; }
+    public Action<Popup>? ShowPopupAsync { get; set; }
 }

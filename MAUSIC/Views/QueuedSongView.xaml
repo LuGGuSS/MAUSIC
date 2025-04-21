@@ -29,16 +29,16 @@
 
     <Border
         Padding="0, 0, 20, 0"
-        Stroke="{Binding IsPlaying, Converter={StaticResource IsPlayingConverter}}" >
+        Stroke="{Binding IsPlaying, Converter={StaticResource IsPlayingConverter}}"
+        BackgroundColor="{Binding IsRecommended, Converter={StaticResource IsRecommendedConverter}}">
 
-        <Grid
-            BackgroundColor="{Binding IsRecommended, Converter={StaticResource IsRecommendedConverter}}">
+        <Grid>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="34"/>
+                <ColumnDefinition Width="44"/>
             </Grid.ColumnDefinitions>
 
             <Image
@@ -81,7 +81,7 @@
                 Source="more.png"
                 HeightRequest="24"
                 WidthRequest="24"
-                Margin="0, 0, 10, 0"
+                Margin="10, 0, 10, 0"
                 Clicked="OnMoreClicked"/>
 
         </Grid>

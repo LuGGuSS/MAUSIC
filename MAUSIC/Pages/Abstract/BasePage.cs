@@ -17,17 +17,14 @@ public class BasePage<TPageModel> : ContentPage
         PageModel.InitializeCommand.Execute(null);
 
         PageModel.ShowPopupAsync = ShowPopup;
-
     }
 
-    private void ShowPopup(Action<object?>? callback)
+    private void ShowPopup(Popup popup)
     {
         MainThread.BeginInvokeOnMainThread(async void () =>
         {
             try
             {
-                var popup = new MoreView(callback);
-
                 await this.ShowPopupAsync(popup);
             }
             catch (Exception e)

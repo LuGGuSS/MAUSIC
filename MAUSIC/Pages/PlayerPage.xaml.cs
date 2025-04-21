@@ -65,6 +65,11 @@ public partial class PlayerPage
         MusicPlayer.SeekTo(newTime);
     }
 
+    private void OnRepeatButtonClicked(object? sender, EventArgs e)
+    {
+        PageModel.IsOnRepeat = !PageModel.IsOnRepeat;
+    }
+
     private void OnSkipPreviousButtonClicked(object? sender, EventArgs e)
     {
         if (MusicPlayer.Position <= TimeSpan.FromSeconds(5))
@@ -85,6 +90,11 @@ public partial class PlayerPage
     private void OnSkipNextButtonClicked(object? sender, EventArgs e)
     {
         PlayNextSong();
+    }
+
+    private void OnShuffleButtonClicked(object? sender, EventArgs e)
+    {
+        PageModel.IsShuffled = !PageModel.IsShuffled;
     }
 
     private void OnMediaEnded(object? sender, EventArgs e)

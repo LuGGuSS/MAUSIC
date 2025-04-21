@@ -34,6 +34,13 @@ public class PlaylistManager
         return result;
     }
 
+    public async Task<PlaylistEntity?> GetPlaylistById(int id)
+    {
+        var result = await _playlistService.GetPlaylistById(id);
+
+        return result;
+    }
+
     public async Task<PlaylistEntity> CreatePlaylist(string title)
     {
         var result = await _playlistService.CreatePlaylist(title);
@@ -113,7 +120,6 @@ public class PlaylistManager
 
         result.Add(await CreatePlaylist(PlaylistsConstants.AllSongs));
         result.Add(await CreatePlaylist(PlaylistsConstants.FavoriteSongs));
-        result.Add(await CreatePlaylist(PlaylistsConstants.TestPlaylist));
 
         return result;
     }

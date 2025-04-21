@@ -11,22 +11,36 @@ namespace MAUSIC.Views;
 public partial class MoreView : Popup
 {
     private readonly Action<object?>? _callback;
-    public MoreView(Action<object?>? callback)
+
+    public MoreView(List<MoreOptionModel> models, Action<object?>? callback)
     {
         InitializeComponent();
 
         _callback = callback;
 
-        var model = new MoreModel(ClosePopupWithCallback);
+        foreach (var model in models)
+        {
+            model.CloseAction = CloseAction;
+        }
 
-        BindingContext = model;
-
+        BindingContext = new MoreModel(models);
     }
 
-    private void ClosePopupWithCallback(object? obj)
+    private void CloseAction(object? result)
     {
-        _callback?.Invoke(obj);
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            try
+            {
+                _callback?.Invoke(result);
 
-        Close();
+                Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        });
     }
 }

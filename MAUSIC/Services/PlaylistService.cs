@@ -27,6 +27,13 @@ public class PlaylistService
         return result;
     }
 
+    public async Task<PlaylistEntity?> GetPlaylistById(int id)
+    {
+        var result = await _databaseManager.GetItemAsync<PlaylistEntity>((entity) => entity.Id == id);
+
+        return result;
+    }
+
     public async Task<PlaylistEntity> CreatePlaylist(string title)
     {
         var result = await _databaseManager.GetItemAsync<PlaylistEntity>((entity) => entity.Title == title);

@@ -5,9 +5,22 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:abstract="clr-namespace:MAUSIC.Pages.Abstract"
     xmlns:pageModels="clr-namespace:MAUSIC.PageModels"
+    xmlns:converters="clr-namespace:MAUSIC.Converters"
     x:Class="MAUSIC.Pages.PlayerPage"
     x:TypeArguments="pageModels:PlayerPageModel"
     x:DataType="pageModels:PlayerPageModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToImageSourceConverter x:Key="IsOnRepeatConverter"
+                                                TrueSource="repeat_on.png"
+                                                FalseSource="repeat.png"/>
+
+            <converters:BoolToImageSourceConverter x:Key="IsShuffledConverter"
+                                                TrueSource="shuffle_on.png"
+                                                FalseSource="shuffle.png"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
         <VerticalStackLayout
@@ -72,10 +85,22 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Button
                     Grid.Column="0"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="{Binding IsOnRepeat, Converter={StaticResource IsOnRepeatConverter}}"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnRepeatButtonClicked"/>
+
+                <Button
+                    Grid.Column="1"
                     BackgroundColor="Transparent"
                     CornerRadius="90"
                     Padding="0"
@@ -85,7 +110,7 @@
                     Clicked="OnSkipPreviousButtonClicked"/>
 
                 <Button
-                    Grid.Column="1"
+                    Grid.Column="2"
                     x:Name="PlayButton"
                     BackgroundColor="Transparent"
                     CornerRadius="90"
@@ -96,7 +121,7 @@
                     Clicked="OnPlayButtonClicked"/>
 
                 <Button
-                    Grid.Column="2"
+                    Grid.Column="3"
                     BackgroundColor="Transparent"
                     CornerRadius="90"
                     Padding="0"
@@ -104,6 +129,16 @@
                     HeightRequest="48"
                     WidthRequest="48"
                     Clicked="OnSkipNextButtonClicked"/>
+
+                <Button
+                    Grid.Column="4"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="{Binding IsShuffled, Converter={StaticResource IsShuffledConverter}}"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnShuffleButtonClicked"/>
 
             </Grid>
 

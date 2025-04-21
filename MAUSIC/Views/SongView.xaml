@@ -14,7 +14,7 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="34"/>
+                <ColumnDefinition Width="44"/>
             </Grid.ColumnDefinitions>
 
             <Image
@@ -57,7 +57,7 @@
                 Source="more.png"
                 HeightRequest="24"
                 WidthRequest="24"
-                Margin="0, 0, 10, 0"
+                Margin="10, 0"
                 Clicked="OnMoreClicked"/>
 
         </Grid>

@@ -1,17 +1,21 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
+using CommunityToolkit.Maui.Core.Extensions;
 using MAUSIC.Models.Abstract;
 
 namespace MAUSIC.Models;
 
 public class SongsQueue : BaseModel, INotifyCollectionChanged
 {
+    private readonly Random _random = new();
+
     private int _currentSongIndex = -1;
 
     private SongModel? _currentSong;
 
     private ObservableCollection<SongModel> _songs = new();
+    private ObservableCollection<SongModel> _originalQueue;
 
     public Action? OnNewSongPlaying { get; set; }
 
@@ -88,6 +92,39 @@ public class SongsQueue : BaseModel, INotifyCollectionChanged
         }
     }
 
+    public void ToggleShuffle(bool shuffle)
+    {
+        if (Songs.Count <= 1)
+        {
+            return;
+        }
+
+        if (shuffle)
+        {
+            _originalQueue = Songs;
+
+            var song = CurrentSong;
+
+            var newQueue = Songs.OrderBy(entity => _random.Next()).ToObservableCollection();
+
+            newQueue.Remove(song!);
+            newQueue.Insert(0, song!);
+
+            _songs = newQueue;
+            _currentSongIndex = 0;
+        }
+        else
+        {
+            var index = _originalQueue.IndexOf(CurrentSong!);
+
+            _songs = _originalQueue;
+            _currentSongIndex = index;
+        }
+
+        OnPropertyChanged(nameof(Songs));
+        OnPropertyChanged(nameof(CurrentSongIndex));
+    }
+
     public void AddSong(SongModel song)
     {
         var newSong = new SongModel
@@ -106,8 +143,6 @@ public class SongsQueue : BaseModel, INotifyCollectionChanged
         };
 
         Songs.Add(newSong);
-
-        // NotifyCollectionChanged();
     }
 
     public void RemoveSong(int songIndex)
