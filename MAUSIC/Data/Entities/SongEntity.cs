@@ -14,7 +14,7 @@ public class SongEntity : BaseEntity
 
     public string Path { get; set; }
 
-    public bool IsFavorite { get; set; }
+    public bool IsFavourite { get; set; }
 
     public string Genres { get; set; }
 

@@ -153,20 +153,16 @@ public partial class QueuePageModel : BasePageModel
                     (playlistId) => RemoveFromPlaylistCallback(playlistId, song)));
                 break;
             case MoreMenuConstants.Favourite:
-                var favouritePlaylist = await _playlistManager.GetPlaylistByTitle(PlaylistsConstants.FavoriteSongs);
-                if (favouritePlaylist != null)
+                var newFavouriteState = await _playlistManager.ToggleFavourite(song);
+                song.IsFavourite = newFavouriteState;
+
+                await _songsManager.SaveSong(song);
+
+                var existingQueueSong = queue?.Songs?.FirstOrDefault((queuedSong) => song.Id == queuedSong.Id);
+
+                if (existingQueueSong != null)
                 {
-                    var newFavouriteState = await _playlistManager.ToggleFavourite(favouritePlaylist, song);
-                    song.IsFavorite = newFavouriteState;
-
-                    await _songsManager.SaveSong(song);
-
-                    var existingQueueSong = queue?.Songs?.FirstOrDefault((queuedSong) => song.Id == queuedSong.Id);
-
-                    if (existingQueueSong != null)
-                    {
-                        existingQueueSong.IsFavorite = newFavouriteState;
-                    }
+                    existingQueueSong.IsFavourite = newFavouriteState;
                 }
                 break;
             case MoreMenuConstants.AddToQueue:

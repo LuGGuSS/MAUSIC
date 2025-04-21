@@ -85,7 +85,7 @@ public class PlaylistService
 
     public async Task<bool> ToggleFavourite(PlaylistEntity playlistEntity, SongEntity song)
     {
-        var playlistSong = await _databaseManager.GetItemAsync<PlaylistSongEntity>((entity) => entity.SongId == song.Id);
+        var playlistSong = await _databaseManager.GetItemAsync<PlaylistSongEntity>((entity) => entity.SongId == song.Id && playlistEntity.Id == entity.PlaylistId);
 
         if (playlistSong != null)
         {
@@ -93,7 +93,13 @@ public class PlaylistService
             return false;
         }
 
-        await _databaseManager.SaveItemAsync(playlistEntity);
+        playlistSong = new PlaylistSongEntity()
+        {
+            PlaylistId = playlistEntity.Id,
+            SongId = song.Id
+        };
+
+        await _databaseManager.SaveItemAsync(playlistSong);
         return true;
     }
 

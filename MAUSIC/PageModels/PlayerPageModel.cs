@@ -17,6 +17,7 @@ public partial class PlayerPageModel : BasePageModel
 {
     private readonly QueueManager _queueManager;
     private readonly RecommendationManager _recommendationManager;
+    private readonly PlaylistManager _playlistManager;
 
     private readonly SemaphoreSlim _semaphore = new(1);
 
@@ -44,16 +45,22 @@ public partial class PlayerPageModel : BasePageModel
 
     [ObservableProperty] private string _currentTimeStringRepresentation;
 
+    [ObservableProperty] private bool _isFavourite;
+
+    [ObservableProperty] private bool _isRecommended;
+
     [ObservableProperty] private MediaSource? _currentSongPath;
 
     [ObservableProperty] private SongsQueue _queue = new SongsQueue();
 
     public PlayerPageModel(
         QueueManager queueManager,
-        RecommendationManager recommendationManager)
+        RecommendationManager recommendationManager,
+        PlaylistManager playlistManager)
     {
         _queueManager = queueManager;
         _recommendationManager = recommendationManager;
+        _playlistManager = playlistManager;
 
         _queueManager.GetCurrentSongsQueue = () => Queue;
         Queue.OnNewSongPlaying = OnNewSongPlaying;
@@ -63,7 +70,6 @@ public partial class PlayerPageModel : BasePageModel
 
     protected override async Task InitializeAsync()
     {
-        // await InitialLoadSongs();
         Title = "Song";
         Artist = "Artist";
         Album = "Album";
@@ -82,6 +88,27 @@ public partial class PlayerPageModel : BasePageModel
         _queueManager.EnqueuePreviousSong(Queue);
     }
 
+    [RelayCommand]
+    private async Task ToggleFavourite()
+    {
+        if (Queue.CurrentSong == null)
+        {
+            return;
+        }
+
+        var result = await _playlistManager.ToggleFavourite(Queue.CurrentSong.Map()!);
+        Queue.CurrentSong.IsFavourite = result;
+        IsFavourite = result;
+    }
+
+    [RelayCommand]
+    private async Task ChangeRecommendationWeight(float weightChange)
+    {
+        var queue = Queue.Songs.Select((model) => model.Map()).ToList();
+        queue.RemoveAt(Queue.CurrentSongIndex);
+        await _recommendationManager.ChangeRecommendationWeight(queue!, Queue.CurrentSong.Map()!, weightChange);
+    }
+
     private async void OnNewSongPlaying()
     {
         if (Queue.Songs == null || Queue.CurrentSong == null)
@@ -93,6 +120,8 @@ public partial class PlayerPageModel : BasePageModel
         Artist = Queue.CurrentSong.Artist;
         Album = Queue.CurrentSong.Album;
         Duration = Queue.CurrentSong.Duration;
+        IsFavourite = Queue.CurrentSong.IsFavourite;
+        IsRecommended = Queue.CurrentSong.IsRecommended;
         DurationTimeSliderValue = Duration.TotalSeconds;
 
         Cover = Queue.CurrentSong.CoverImage;

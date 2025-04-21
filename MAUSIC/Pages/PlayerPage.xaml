@@ -19,6 +19,10 @@
             <converters:BoolToImageSourceConverter x:Key="IsShuffledConverter"
                                                 TrueSource="shuffle_on.png"
                                                 FalseSource="shuffle.png"/>
+
+            <converters:BoolToImageSourceConverter x:Key="IsFavouriteConverter"
+                                                   TrueSource="heart_check.png"
+                                                   FalseSource="heart_plus.png"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -46,6 +50,51 @@
             <Label
                 Text="{Binding Album}"
                 Style="{StaticResource SubHeadline}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <HorizontalStackLayout
+                    IsVisible="{Binding IsRecommended}"
+                    HorizontalOptions="Start"
+                    Grid.Column="0"
+                    Spacing="16">
+
+                    <Button
+                        BackgroundColor="Transparent"
+                        CornerRadius="90"
+                        Padding="0"
+                        ImageSource="thumb_down.png"
+                        HeightRequest="48"
+                        WidthRequest="48"
+                        Clicked="OnDislikeClicked"/>
+
+                    <Button
+                        BackgroundColor="Transparent"
+                        CornerRadius="90"
+                        Padding="0"
+                        ImageSource="thumb_up.png"
+                        HeightRequest="48"
+                        WidthRequest="48"
+                        Clicked="OnLikeClicked"/>
+
+                </HorizontalStackLayout>
+
+                <Button
+                    Grid.Column="1"
+                    HorizontalOptions="End"
+                    BackgroundColor="Transparent"
+                    CornerRadius="90"
+                    Padding="0"
+                    ImageSource="{Binding IsFavourite, Converter={StaticResource IsFavouriteConverter}}"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    Clicked="OnFavouriteClicked"/>
+
+            </Grid>
 
             <Slider
                 x:Name="Slider"

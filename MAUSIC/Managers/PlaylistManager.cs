@@ -80,9 +80,11 @@ public class PlaylistManager
         return result;
     }
 
-    public async Task<bool> ToggleFavourite(PlaylistEntity playlistEntity, SongEntity song)
+    public async Task<bool> ToggleFavourite(SongEntity song)
     {
-        var result = await _playlistService.ToggleFavourite(playlistEntity, song);
+        var favouritePlaylist = await _playlistService.GetPlaylistByTitle(PlaylistsConstants.FavouriteSongs);
+
+        var result = await _playlistService.ToggleFavourite(favouritePlaylist!, song);
 
         return result;
     }
@@ -119,7 +121,7 @@ public class PlaylistManager
         var result = new List<PlaylistEntity>();
 
         result.Add(await CreatePlaylist(PlaylistsConstants.AllSongs));
-        result.Add(await CreatePlaylist(PlaylistsConstants.FavoriteSongs));
+        result.Add(await CreatePlaylist(PlaylistsConstants.FavouriteSongs));
 
         return result;
     }

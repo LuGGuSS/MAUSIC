@@ -44,7 +44,7 @@ public class SongsQueue : BaseModel, INotifyCollectionChanged
                     OpenPopupFunc = OpenPopupFunc,
                     Path = song.Path,
                     Title = song.Title,
-                    IsFavorite = song.IsFavorite,
+                    IsFavourite = song.IsFavourite,
                 };
 
                 newSongs.Add(newSong);
@@ -52,6 +52,7 @@ public class SongsQueue : BaseModel, INotifyCollectionChanged
 
             if (SetField(ref _songs, newSongs))
             {
+                CurrentSongIndex = -1;
                 CurrentSongIndex = 0;
             }
         }
@@ -138,7 +139,7 @@ public class SongsQueue : BaseModel, INotifyCollectionChanged
             OpenPopupFunc = OpenPopupFunc,
             Path = song.Path,
             Title = song.Title,
-            IsFavorite = song.IsFavorite,
+            IsFavourite = song.IsFavourite,
             IsRecommended = song.IsRecommended
         };
 
