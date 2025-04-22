@@ -110,9 +110,14 @@ public partial class PlayerPage
             return;
         }
 
-        MusicPlayer.SeekTo(TimeSpan.Zero);
-        PageModel.CurrentTimeSliderValue = 0;
+        var state = MusicPlayer.CurrentState;
+
         PageModel.EnqueueNextSongCommand.Execute(null);
+
+        if (MusicPlayer.CurrentState != state && state == MediaElementState.Playing)
+        {
+            MusicPlayer.Play();
+        }
     }
 
     private void PlayPreviousSong()
@@ -122,8 +127,6 @@ public partial class PlayerPage
             return;
         }
 
-        MusicPlayer.SeekTo(TimeSpan.Zero);
-        PageModel.CurrentTimeSliderValue = 0;
         PageModel.EnqueuePreviousSongCommand.Execute(null);
     }
 

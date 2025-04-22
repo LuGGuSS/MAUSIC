@@ -200,6 +200,7 @@
             Source="{Binding CurrentSongPath}"
             MetadataTitle="{Binding Title}"
             MetadataArtist="{Binding Artist}"
+            ShouldAutoPlay="True"
             StateChanged="OnMediaPlayerStateChanged"
             PositionChanged="OnPlayerPositionChanged"
             MediaEnded="OnMediaEnded"/>

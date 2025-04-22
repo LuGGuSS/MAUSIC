@@ -53,6 +53,30 @@ public partial class FoldersPageModel : BasePageModel
         }
 
         await TryPopulateWithFolders(folderEntities);
+
+
+#if ANDROID
+        if ((int)Build.VERSION.SdkInt >= 33) // Android 13+
+        {
+            // For Android 13+, use Media permissions
+#pragma warning disable CA1416
+            var permission = Manifest.Permission.ReadMediaAudio;
+#pragma warning restore CA1416
+            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
+            }
+        }
+        else
+        {
+            var permission = Manifest.Permission.ReadExternalStorage;
+            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
+            }
+        }
+#endif
+
     }
 
     private async Task TryPopulateWithFolders(List<FolderEntity> folderEntities)
@@ -126,28 +150,6 @@ public partial class FoldersPageModel : BasePageModel
 
     public async Task RequestFiles()
     {
-#if ANDROID
-        if ((int)Build.VERSION.SdkInt >= 33) // Android 13+
-        {
-            // For Android 13+, use Media permissions
-#pragma warning disable CA1416
-            var permission = Manifest.Permission.ReadMediaAudio;
-#pragma warning restore CA1416
-            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
-            {
-                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
-            }
-        }
-        else
-        {
-            var permission = Manifest.Permission.ReadExternalStorage;
-            if (ContextCompat.CheckSelfPermission(Platform.CurrentActivity, permission) != Permission.Granted)
-            {
-                ActivityCompat.RequestPermissions(Platform.CurrentActivity, new[] { permission }, 0);
-            }
-        }
-#endif
-
         var files = await _storageManager.PickFolder();
 
         if (files == null || files.Count == 0)
